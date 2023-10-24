@@ -7,6 +7,7 @@ from config import *
 
 
 db = SQLAlchemy()
+metadata = db.metadata
 
 
 class UUIDMixin:
@@ -19,40 +20,40 @@ class User(UUIDMixin, db.Model):
     last_name = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=False)
     surname = db.Column(db.String(DEFAULT_STRING_VALUE))
     username = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=False)
-    password = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=False)
+    password = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=False, unique=True)
 
 
 class Categories(UUIDMixin, db.Model):
     name = db.Column(db.String(DEFAULT_STRING_VALUE), unique=True)
-    supercategory_id = db.Colomn(UUID(as_uuid=True), db.ForeignKey(
-        'categories.id'), ondelete='PROTECT', nullable=True)
+    supercategory_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
+        'categories.id', ondelete='SET NULL'), nullable=True)
 
 
 class Orders(UUIDMixin, db.Model):
     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     status = name = db.Column(db.String(DEFAULT_STRING_VALUE))
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
-        'user.id'), ondelete='SET_NULL', nullable=True)
+        'user.id', ondelete='SET NULL'), nullable=True)
 
 
 class Products(UUIDMixin, db.Model):
-    name = db.Colomn(db.String(DEFAULT_STRING_VALUE))
+    name = db.Column(db.String(DEFAULT_STRING_VALUE))
     category_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
-        'categories.id'), ondelete='PROTECT', nullable=True)
+        'categories.id', ondelete='SET NULL'), nullable=True)
     weight = db.Column(db.Float, nullable=True)
     description = db.Column(db.String, nullable=True)
     composition = db.Column(db.String, nullable=True)
-    storage_conditions = db.Colomn(db.String(DEFAULT_STRING_VALUE), nullable=True)
+    storage_conditions = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=True)
     number = db.Column(db.Integer, nullable=True)
     price = db.Column(DECIMAL(precision=10, scale=2), nullable=False)
-    status = db.Column(db.String(DEFAULT_STRING_VALUE))
+    prod_status = db.Column(db.String(DEFAULT_STRING_VALUE))
     image_path = db.Column(db.String(DEFAULT_STRING_VALUE))
 
 
-class OrdersToProducts(db.Model):
+class OrdersToProducts(UUIDMixin, db.Model):
     product_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
-        'products.id'), ondelete='PROTECT', nullable=True)
+        'products.id', ondelete='SET NULL'), nullable=True)
     number = db.Column(db.Integer)
     order_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
-        'orders'), ondelete='CASCADE', nullable=True)
+        'orders.id', ondelete='CASCADE'), nullable=True)
