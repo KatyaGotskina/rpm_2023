@@ -1,43 +1,44 @@
 <html lang="en"><head>
     <meta charset="UTF-8">
     <title>Login Page with Background Image Example</title>
-    <link rel="stylesheet" href="{{ url_for('static',filename='styles/signin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/signup.css') }}">
     </head>
     <body>
     
-    
-    
-    <form action="/signup" method="post">
-    <div class="form-field">
-        <input type="email" name="email" placeholder="email" required="">
-    </div>
-    <div class="form-field">
-    <input type="string" name="username" placeholder="Username" required="">
-    </div>
-    <div class="form-field">
-        <input type="string" name="last_name" placeholder="Фамилия" required="">
-    </div>
-    <div class="form-field">
-    <input type="string" name="first_name" placeholder="Имя" required=""> 
-    </div>
-    <div class="form-field">
-        <input type="string" name="surname" placeholder="Отчество" required="">
-    </div>
-    <div class="form-field">
-        <input type="password" name="password" placeholder="Password" required=""> </div>
-    <div class="form-field">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        {% for message in messages %}
-        <h5>{{ message }}</h5>
-        {% endfor %}
-        {% endif %}
-    {% endwith %}
-    <div class="form-field">
-    <button class="btn" type="submit">Log in</button>
-    </div>
-    </form>
-    
+        
+        
+        <form action="/signup" method="post">
+            <div class="form-field">
+                <input type="email" name="email" placeholder="email" required="">
+            </div>
+            <div class="form-field">
+            <input type="string" name="username" placeholder="Username" required="">
+            </div>
+            <div class="form-field">
+                <input type="string" name="last_name" placeholder="Фамилия" required="">
+            </div>
+            <div class="form-field">
+            <input type="string" name="first_name" placeholder="Имя" required=""> 
+            </div>
+            <div class="form-field">
+                <input type="string" name="surname" placeholder="Отчество" required="">
+            </div>
+            <div class="form-field">
+                <input type="password" name="password" placeholder="Password" required=""> </div>
+            <div class="form-field">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                {% for message in messages %}
+                <h5>{{ message }}</h5>
+                {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <div class="form-field">
+            <button class="btn" type="submit">Log in</button>
+            </div>
+        </form>
+        
 
     
-    </body></html>
+    </body>
+</html>
