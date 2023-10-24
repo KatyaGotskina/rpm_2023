@@ -5,9 +5,9 @@ from models import User, db
 
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ignat.db'
-# app.secret_key = os.environ.get('secret_key')
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///katya.db'
+app.secret_key = os.environ.get('secret_key')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['MAIL_SERVER'] = "smtp.gmail.com"
 # app.config['MAIL_PORT'] = 587
 # app.config['MAIL_USE_TLS'] = True
@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 #mail = Mail(app)
 
-# db.init_app(app)
+db.init_app(app)
 
 # @app.route('/signin', methods=['POST', 'GET'])
 # def signin():
