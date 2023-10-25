@@ -1,12 +1,13 @@
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, flash, get_flashed_messages
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
-from models import User, db
+from models import User, db, Categories, Products, Orders
 
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://katya:--@localhost:5432/flask_app'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = os.getenv('SECRET_KEY')
 # app.config['MAIL_SERVER'] = "smtp.gmail.com"
 # app.config['MAIL_PORT'] = 587
 # app.config['MAIL_USE_TLS'] = True
@@ -68,6 +69,30 @@ def signup():
 @app.route('/homepage')
 def homepage():
     return render_template('homepage.html')
+
+@app.route('/menu')
+def menu(category=None):
+    context = {}
+    if category:
+        context["categories"] = list(Categories.query.filter(Categories.supercategory_id == category.id))
+        context["data"] = {category: get_products(category)}
+    else:
+        context["categories"] = []
+        categories = list(Categories.query.filter(Categories.supercategory_id == None))
+        context['data'] = {cat : get_products(cat) for cat in categories}
+    print(context)
+    return render_template('menu.html', **context)
+
+def get_products(category):
+    products = []
+    categories = [category]
+    while categories:
+        category = categories.pop()
+        for cat in Categories.query.filter(Categories.supercategory_id == category.id):
+            categories.append(cat)
+        for product in Products.query.filter(Products.category_id == category.id):
+            products.append(product)
+    return products
 
 
 if __name__ == '__main__':
