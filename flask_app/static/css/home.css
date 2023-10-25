@@ -4,10 +4,12 @@
 .card-title {
     font-size: 17px;
     text-align: center;
+    color: black;
 }
 .card-text {
     font-size: 13px;
     text-align: center;
+    color: black;
 }
 
 .card:hover {

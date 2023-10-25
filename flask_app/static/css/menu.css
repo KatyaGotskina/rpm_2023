@@ -1,6 +1,7 @@
 .main-part {
-    padding-left: 150px;
-    padding-right: 150px;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 10px;
   }
   
   .product-card:hover {
@@ -58,4 +59,3 @@
       color: #3c7d60;
       font-size: 20px;
   }
-  
