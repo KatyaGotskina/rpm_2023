@@ -10,9 +10,17 @@
             </div>
             <div class="form-field">
                 <input type="password" name="password" placeholder="Password" required=""> </div>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <h5>{{ message }}</h5>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
             <div class="form-field">
-            <button class="btn" type="submit">Log in</button>
+            <button class="btn" type="submit">Войти</button>
             </div>
+            <a href="/signup" style="color: rgb(38, 96, 184); text-decoration: none;">Зарегестрироваться</a>
         </form>
     </body>
 </html>
