@@ -27,32 +27,32 @@
             </ul>
         </div>
     </div>
-        <div class="container">
-            <div class="main-part">
-                {% for cat, product_list in data.items() %}
-                    <h4 style="color: rgb(26, 91, 145);">
-                        {{ cat.name }}
-                    </h4>
-                    <div class="row justify-content-center;" style="overflow-x: scroll;">
+    <div class="container">
+        <div class="main-part">
+            {% for cat, product_list in data.items() %}
+                <h4 style="color: rgb(26, 91, 145);">
+                    {{ cat.name }}
+                </h4>
+                <div class="slide-container">
+                    <div class="slide-content">
                         {% for product in product_list %}
-                        <div class="col-lg-2 col-sm-6">
-                            <div class="product-card" style="height: 220px; width: 180px;">
-                                <div class="prod-image">
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}"><img src="{{ url_for('static', filename=product.image_path) }}" alt=""></a>
-
-                                </div>
-                                <div class="prod-details">
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}">{{ product.name }}</a>
-                                    <div class="bottom-details d-flex justify-content-between">
-                                        <p class="card-text">{{ product.weight }} кг</p>
-                                        <p class="card-text" style="font-size: 17px;">{{ product.price }} руб</p>
-                                    </div>
+                        <div class="product-card">
+                            <div class="prod-image">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}"><img src="{{ url_for('static', filename=product.image_path) }}" alt=""></a>
+                            </div>
+                            <div class="prod-details">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}">{{ product.name }}</a>
+                                <div class="bottom-details d-flex justify-content-between">
+                                    <p class="card-text">{{ product.weight }} кг</p>
+                                    <p class="card-text" style="font-size: 17px;">{{ product.price }} руб</p>
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
-                    </div> 
-                {% endfor %}
-            </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
+    </div>
+    
 {% endblock %}

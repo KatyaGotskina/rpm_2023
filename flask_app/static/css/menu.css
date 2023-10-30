@@ -12,7 +12,10 @@
       border: thick double #34687d;
       margin-bottom: 5px;
       margin-top: 5px;
+      margin-left: 10px;
       border-radius: 10px;
+      width: 200px;
+      height: 200px;
   }
   
   
@@ -59,3 +62,12 @@
       color: #3c7d60;
       font-size: 20px;
   }
+
+  .slide-container {
+    display: flex;
+    overflow-x: scroll; /* Разрешает горизонтальную прокрутку */
+}
+
+.slide-content {
+    display: flex; /* Элементы будут располагаться в одной строке */
+}
