@@ -15,15 +15,15 @@
     <!-- This is your sidebar -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
         <div class="offcanvas-header">
-            <h5 id="offcanvasLeftLabel">Категории</h5>
+            <h5 id="offcanvasLeftLabel" style="color: rgb(26, 91, 145); font-size: 25px;">Категории</h5>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <!-- Here you can add your content or links -->
             <ul>
-                <li><a href="#">Link 1</a></li>
-                <li><a href="#">Link 2</a></li>
-                <li><a href="#">Link 3</a></li>
+                {% for cat, product_list in data.items() %}
+                    <li><a href="#" style="text-decoration: none; color: #61917c; font-size: 20px;">{{ cat.name }}</a></li>
+                {% endfor %}
             </ul>
         </div>
     </div>
