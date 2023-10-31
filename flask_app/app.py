@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, flash, get_flashed_messages
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+#from flask_login import LoginManager, login_user, login_required, logout_user
 from models import User, db, Categories, Products, Orders
 
 
@@ -14,7 +15,8 @@ app.secret_key = os.getenv('SECRET_KEY')
 # app.config['MAIL_USERNAME'] = os.environ.get('mail')
 # app.config['MAIL_PASSWORD'] = os.environ.get('password')
 # app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('mail')
-
+# login_manager = LoginManager()
+# login_manager.init_app(app)
 #mail = Mail(app)
 
 db.init_app(app)
@@ -32,7 +34,7 @@ def signin():
             flash("Пользователь с указанным логином не найден")
             return redirect("/signin")
         if check_password_hash(user.password, password):
-
+            #login_user(user)
             return render_template('homepage.html')
         else:
             flash("Пароль не верен")
@@ -94,6 +96,22 @@ def get_products(category):
             products.append(product)
     return products
 
+@app.route("/filter_category/<uuid:category_id>")
+def filter_category(category_id):
+    category = Categories.query.get(category_id)
+    products = Products.query.filter(Products.category_id == category.id)
+    return render_template('category_products.html', products=products, categories=Categories.query.all())
+
+# @login_manager.user_loader
+# def load_user(user_id):
+#     return User.query.filter(User.id == user_id).first()
+
+
+# @login_required
+# @app.route("/logout")
+# def logout():
+#     logout_user()
+#     return redirect("menu.html")
 
 if __name__ == '__main__':
     with app.app_context():
