@@ -22,7 +22,7 @@
             <!-- Here you can add your content or links -->
             <ul>
                 {% for cat, product_list in data.items() %}
-                    <li><a href="#" style="text-decoration: none; color: #61917c; font-size: 20px;">{{ cat.name }}</a></li>
+                    <li><a href="filter_category/{{ cat.id }}" style="text-decoration: none; color: #61917c; font-size: 20px;">{{ cat.name }}</a></li>
                 {% endfor %}
             </ul>
         </div>

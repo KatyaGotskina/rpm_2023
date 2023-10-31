@@ -1,0 +1,52 @@
+{% extends 'main.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/category_products.css') }}">
+{% endblock %}
+{% block content %}
+<!-- This goes somewhere in your main layout -->
+<button style="
+margin-top: 20px;
+margin-left: 10px;
+background-color: rgb(26, 91, 145);
+border-color: white;
+width: 100px;
+"class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft">Каталог</button>
+<!-- This is your sidebar -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasLeftLabel" style="color: rgb(26, 91, 145); font-size: 25px;">Категории</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <!-- Here you can add your content or links -->
+        <ul>
+            {% for cat in categories %}
+                <li><a href="{{ cat.id }}" style="text-decoration: none; color: #61917c; font-size: 20px;">{{ cat.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<div class="container">
+    <div class="main-part">
+        <div class="row justify-content-center">
+            {% for product in products %}
+            <div class="col-lg-2 col-md-6 col-sm-12">
+                <div class="product-card">
+                    <div class="prod-image">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}"><img src="{{ url_for('static', filename=product.image_path) }}"></a>
+                    </div>
+                    <div class="prod-details">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}">{{ product.name }}</a>
+                        <div class="bottom-details d-flex justify-content-between">
+                            <p class="card-text">{{ product.weight }} кг</p>
+                            <p class="card-text" style="font-size: 17px;">{{ product.price }} руб</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
