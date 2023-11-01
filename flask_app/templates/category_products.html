@@ -4,9 +4,6 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/category_products.css') }}">
 {% endblock %}
 {% block content %}
-<div class="search-box">
-    <input type="text" id="product-search" class="form-control" placeholder="Поиск..." onchange="get_prod()">
-</div>
 <!-- This goes somewhere in your main layout -->
 <button style="
 margin-top: 20px;
@@ -25,7 +22,7 @@ width: 100px;
         <!-- Here you can add your content or links -->
         <ul>
             {% for cat in categories %}
-                <li><a href="{{ cat.id }}" style="text-decoration: none; color: #61917c; font-size: 20px;">{{ cat.name }}</a></li>
+                <li><a href="{{ url_for('filter_category', category_id=cat.id) }}" style="text-decoration: none; color: #61917c; font-size: 20px;">{{ cat.name }}</a></li>
             {% endfor %}
         </ul>
     </div>

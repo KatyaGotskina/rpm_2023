@@ -62,20 +62,3 @@
       color: #3c7d60;
       font-size: 20px;
   }
-
-  .search-box {
-    position: absolute;
-    top: 70px;
-    right: 10px;
-    margin-right: 20px;
-    z-index: 999;
-}
-
-.search-box input {
-    border: thick double #25436b;
-    border-radius: 10px;
-    width: 300px;
-    padding: 5px;
-    font-size: 15px;
-    /* Другие стили по вашему усмотрению */
-}
