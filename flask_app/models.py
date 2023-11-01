@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DECIMAL
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
+from flask_login import UserMixin
 from datetime import datetime
 from config import *
 
@@ -15,7 +16,7 @@ class UUIDMixin:
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
 
-class User(UUIDMixin, db.Model):
+class User(UUIDMixin, UserMixin, db.Model): 
     first_name = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=False)
     last_name = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=False)
     surname = db.Column(db.String(DEFAULT_STRING_VALUE))
