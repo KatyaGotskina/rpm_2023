@@ -4,6 +4,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/menu.css') }}">
 {% endblock %}
     {% block content %}
+    <div class="search-box">
+        <input type="text" id="product-search" class="form-control" placeholder="Поиск..." onchange="get_prod()">
+    </div>
     <!-- This goes somewhere in your main layout -->
     <button style="
         margin-top: 20px;
@@ -54,5 +57,5 @@
             {% endfor %}
         </div>
     </div>
-    
+    <script src="static/js/flask_app.js"></script>
 {% endblock %}

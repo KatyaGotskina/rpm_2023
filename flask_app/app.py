@@ -1,23 +1,25 @@
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, flash, get_flashed_messages
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
-#from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user
 from models import User, db, Categories, Products, Orders
+from flask_mail import Mail
+from sqlalchemy import text
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://katya:--@localhost:5432/flask_app'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://katya:kbwtq12345F@localhost:5432/flask_app'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.getenv('SECRET_KEY')
-# app.config['MAIL_SERVER'] = "smtp.gmail.com"
-# app.config['MAIL_PORT'] = 587
-# app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_SERVER'] = "smtp.gmail.com"
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
 # app.config['MAIL_USERNAME'] = os.environ.get('mail')
 # app.config['MAIL_PASSWORD'] = os.environ.get('password')
 # app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('mail')
-# login_manager = LoginManager()
-# login_manager.init_app(app)
-#mail = Mail(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+mail = Mail(app)
 
 db.init_app(app)
 
@@ -34,7 +36,7 @@ def signin():
             flash("Пользователь с указанным логином не найден")
             return redirect("/signin")
         if check_password_hash(user.password, password):
-            #login_user(user)
+            login_user(user)
             return render_template('homepage.html')
         else:
             flash("Пароль не верен")
@@ -82,7 +84,6 @@ def menu(category=None):
         context["categories"] = []
         categories = list(Categories.query.filter(Categories.supercategory_id == None))
         context['data'] = {cat : get_products(cat) for cat in categories}
-    print(context)
     return render_template('menu.html', **context)
 
 def get_products(category):
@@ -100,18 +101,33 @@ def get_products(category):
 def filter_category(category_id):
     category = Categories.query.get(category_id)
     products = Products.query.filter(Products.category_id == category.id)
-    return render_template('category_products.html', products=products, categories=Categories.query.all())
+    return render_template('category_products.html', products=products, categories=Categories.query.all(), message='')
 
-# @login_manager.user_loader
-# def load_user(user_id):
-#     return User.query.filter(User.id == user_id).first()
+@app.route('/product_search', methods=['GET', 'POST'])
+def product_search():
+    products = []
+    word = request.args.get('word').lower()
+    regex_pattern = f'^(.*{word}.*)'
+    sql_query = text("SELECT id FROM products WHERE name ~* :regex_pattern")
+    res = db.session.execute(sql_query, {"regex_pattern": regex_pattern})
+    product_ids = res.fetchall()
+    print(product_ids)
+    for id in product_ids:
+        products.append(Products.query.get(id[0]))
+    if not products:
+        return render_template('category_products.html', products=products, categories=Categories.query.all(), message='Таких товаров не найдено..')
+    else:
+        return render_template('category_products.html', products=products, categories=Categories.query.all(), message='')
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.filter(User.id == user_id).first()
 
-# @login_required
-# @app.route("/logout")
-# def logout():
-#     logout_user()
-#     return redirect("menu.html")
+@login_required
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect("menu.html")
 
 if __name__ == '__main__':
     with app.app_context():
