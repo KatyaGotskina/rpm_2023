@@ -4,7 +4,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/category_products.css') }}">
 {% endblock %}
 {% block content %}
-<!-- This goes somewhere in your main layout -->
+<div class="search-box">
+    <input type="text" id="product-search" class="form-control" placeholder="Поиск...">
+</div>
 <button style="
 margin-top: 20px;
 margin-left: 10px;
@@ -12,21 +14,6 @@ background-color: rgb(26, 91, 145);
 border-color: white;
 width: 100px;
 "class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft">Каталог</button>
-<!-- This is your sidebar -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
-    <div class="offcanvas-header">
-        <h5 id="offcanvasLeftLabel" style="color: rgb(26, 91, 145); font-size: 25px;">Категории</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <!-- Here you can add your content or links -->
-        <ul>
-            {% for cat in categories %}
-                <li><a href="{{ url_for('filter_category', category_id=cat.id) }}" style="text-decoration: none; color: #61917c; font-size: 20px;">{{ cat.name }}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
-</div>
 <div class="container">
     <div class="main-part">
         {% if message %}
@@ -53,4 +40,28 @@ width: 100px;
     </div>
 </div>
 <script src="static/js/flask_app.js"></script>
+<script>
+    var products = JSON.parse('{{ products|tojson|safe }}');
+    function filterProducts(searchText) {
+        searchText = searchText.toLowerCase();
+        var productCards = document.querySelectorAll('.product-card');
+
+        productCards.forEach(function(productCard) {
+            var productNameElement = productCard.querySelector('.prod-details a');
+            var productName = productNameElement.textContent.toLowerCase();
+
+            if (productName.includes(searchText)) {
+                productCard.style.display = 'block';
+            } else {
+                productCard.style.display = 'none';
+            }
+        });
+    }
+    function onSearchInputChange() {
+        var searchText = document.getElementById('product-search').value;
+        filterProducts(searchText);
+    }
+    document.getElementById('product-search').addEventListener('input', onSearchInputChange);
+</script>
+
 {% endblock %}
