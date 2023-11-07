@@ -101,6 +101,11 @@ def get_products(category):
 def filter_category(category_id):
     category = Categories.query.get(category_id)
     products = Products.query.filter(Products.category_id == category.id)
+    products = [{
+        'name' : product.name, 
+        'wieght' : product.weight, 
+        'price': product.price,
+        'image_path' : product.image_path} for product in products]
     return render_template('category_products.html', products=products, categories=Categories.query.all(), message='')
 
 @app.route('/product_search', methods=['GET', 'POST'])
@@ -111,9 +116,13 @@ def product_search():
     sql_query = text("SELECT id FROM products WHERE name ~* :regex_pattern")
     res = db.session.execute(sql_query, {"regex_pattern": regex_pattern})
     product_ids = res.fetchall()
-    print(product_ids)
     for id in product_ids:
         products.append(Products.query.get(id[0]))
+    products = [{
+        'name' : product.name, 
+        'wieght' : product.weight, 
+        'price': product.price,
+        'image_path' : product.image_path} for product in products]
     if not products:
         return render_template('category_products.html', products=products, categories=Categories.query.all(), message='Таких товаров не найдено..')
     else:

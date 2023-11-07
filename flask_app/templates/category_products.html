@@ -5,6 +5,9 @@
 {% endblock %}
 {% block content %}
 <!-- This goes somewhere in your main layout -->
+<div class="search-box">
+    <input type="text" id="product-search-cat" class="form-control" placeholder="Поиск...">
+</div>
 <button style="
 margin-top: 20px;
 margin-left: 10px;
@@ -33,24 +36,56 @@ width: 100px;
             <p style="font-size: 25px; color: rgb(170, 162, 162); padding-left: 440px">{{ message }}</p>
         {% endif %}
         <div class="row justify-content-center">
-            {% for product in products %}
-            <div class="col-lg-2 col-md-6 col-sm-12">
-                <div class="product-card">
-                    <div class="prod-image">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}"><img src="{{ url_for('static', filename=product.image_path) }}"></a>
-                    </div>
-                    <div class="prod-details">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}">{{ product.name }}</a>
-                        <div class="bottom-details d-flex justify-content-between">
-                            <p class="card-text">{{ product.weight }} кг</p>
-                            <p class="card-text" style="font-size: 17px;">{{ product.price }} руб</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
         </div>
     </div>
 </div>
-<script src="static/js/flask_app.js"></script>
+<script>
+    let products = JSON.parse('{{ products|tojson|safe }}');
+    let all_prods = JSON.parse('{{ products|tojson|safe }}');
+    
+    function renderGrid() {
+        let gridContainer = document.querySelector('.main-part .row');
+        gridContainer.innerHTML = '';
+        products.forEach(function(product) {
+            let productCard = document.createElement('div');
+            productCard.className = 'col-lg-2 col-md-6 col-sm-12';
+            let imageUrl = `http://localhost:5000/static/${product.image_path}`;
+            productCard.innerHTML = `
+                <div class="product-card">
+                    <div class="prod-image">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#${product.id}"><img src="${imageUrl}"></a>
+                    </div>
+                    <div class="prod-details">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#${product.id}">${product.name}</a>
+                        <div class="bottom-details d-flex justify-content-between">
+                            <p class="card-text">${product.weight} кг</p>
+                            <p class="card-text" style="font-size: 17px;">${product.price} руб</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            gridContainer.appendChild(productCard);
+        });
+    }
+
+    function filterProducts(searchText) {
+        products = all_prods;
+        searchText = searchText.toLowerCase();
+
+        let filteredProducts = products.filter(function(product) {
+            return product.name.toLowerCase().includes(searchText);
+        });
+        products = filteredProducts;
+        renderGrid();
+    }
+
+    function onSearchInputChange() {
+        let searchText = document.getElementById('product-search-cat').value;
+        filterProducts(searchText);
+    }
+    document.getElementById('product-search-cat').addEventListener('input', onSearchInputChange);
+    renderGrid();
+</script>
+
+
 {% endblock %}
