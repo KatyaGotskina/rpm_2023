@@ -75,27 +75,20 @@ def homepage():
     return render_template('homepage.html')
 
 @app.route('/menu')
-def menu(category=None):
+def menu():
     context = {}
-    if category:
-        context["categories"] = list(Categories.query.filter(Categories.supercategory_id == category.id))
-        context["data"] = {category: get_products(category)}
-    else:
-        context["categories"] = []
-        categories = list(Categories.query.filter(Categories.supercategory_id == None))
-        context['data'] = {cat : get_products(cat) for cat in categories}
+    context['data'] = {}
+    categories = list(Categories.query.filter(Categories.supercategory_id == None))
+    context['categories'] = categories
+    for category in categories:
+        products = Products.query.filter(Products.category_id == category.id)
+        products = [{
+            'name' : product.name, 
+            'weight' : product.weight, 
+            'price': product.price,
+            'image_path' : product.image_path} for product in products]
+        context['data'][category.name] = products
     return render_template('menu.html', **context)
-
-def get_products(category):
-    products = []
-    categories = [category]
-    while categories:
-        category = categories.pop()
-        for cat in Categories.query.filter(Categories.supercategory_id == category.id):
-            categories.append(cat)
-        for product in Products.query.filter(Products.category_id == category.id):
-            products.append(product)
-    return products
 
 @app.route("/filter_category/<uuid:category_id>")
 def filter_category(category_id):

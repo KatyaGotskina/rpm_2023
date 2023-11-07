@@ -5,7 +5,7 @@
 {% endblock %}
     {% block content %}
     <div class="search-box">
-        <input type="text" id="product-search" class="form-control" placeholder="Поиск..." onchange="get_prod()">
+        <input type="text" id="product-search" class="form-control" placeholder="Поиск...">
     </div>
     <!-- This goes somewhere in your main layout -->
     <button style="
@@ -22,9 +22,8 @@
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            <!-- Here you can add your content or links -->
             <ul>
-                {% for cat, product_list in data.items() %}
+                {% for cat in categories %}
                     <li><a href="filter_category/{{ cat.id }}" style="text-decoration: none; color: #61917c; font-size: 20px;">{{ cat.name }}</a></li>
                 {% endfor %}
             </ul>
@@ -32,30 +31,74 @@
     </div>
     <div class="container">
         <div class="main-part">
-            {% for cat, product_list in data.items() %}
-                <h4 style="color: rgb(26, 91, 145);">
-                    {{ cat.name }}
-                </h4>
-                <div class="slide-container">
-                    <div class="slide-content">
-                        {% for product in product_list %}
-                        <div class="product-card">
-                            <div class="prod-image">
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}"><img src="{{ url_for('static', filename=product.image_path) }}" alt=""></a>
-                            </div>
-                            <div class="prod-details">
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}">{{ product.name }}</a>
-                                <div class="bottom-details d-flex justify-content-between">
-                                    <p class="card-text">{{ product.weight }} кг</p>
-                                    <p class="card-text" style="font-size: 17px;">{{ product.price }} руб</p>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endfor %}
         </div>
     </div>
-    <script src="static/js/flask_app.js"></script>
+
+    <script>
+        let data = JSON.parse('{{ data|tojson|safe }}');
+        let all_data = JSON.parse('{{ data|tojson|safe }}');
+
+        function renderGrid() {
+            let gridContainer = document.querySelector('.main-part');
+            gridContainer.innerHTML = '';
+
+            for (let cat in data) {
+                let categoryName = document.createElement('H4');
+                categoryName.style.color = 'rgb(26, 91, 145)';
+                categoryName.textContent = cat;
+                gridContainer.appendChild(categoryName);
+
+                let slideContainer = document.createElement('div');
+                slideContainer.className = "slide-container";
+                let slideContent = document.createElement('div');
+                slideContent.className = "slide-content";
+                slideContainer.appendChild(slideContent);
+
+                data[cat].forEach(function(product) {
+                    let imageUrl = `http://localhost:5000/static/${product.image_path}`;
+                    let productCard = document.createElement('div');
+                    productCard.className = "product-card";
+                    productCard.innerHTML = `
+                        <div class="prod-image">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#${product.id}"><img src="${imageUrl}"></a>
+                        </div>
+                        <div class="prod-details">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#${product.id}">${product.name}</a>
+                            <div class="bottom-details d-flex justify-content-between">
+                                <p class="card-text">${product.weight} кг</p>
+                                <p class="card-text" style="font-size: 17px;">${product.price} руб</p>
+                            </div>
+                        </div>`;
+                    slideContent.appendChild(productCard);
+                });
+
+                gridContainer.appendChild(slideContainer);
+            }
+        }
+
+        function filteredData(searchText) {
+            searchText = searchText.toLowerCase();
+            let new_data = {};
+
+            for (let cat in data) {
+                new_data[cat] = data[cat].filter(function(product) {
+                    return product.name.toLowerCase().includes(searchText);
+                });
+
+                if (new_data[cat].length === 0) {
+                    delete new_data[cat];
+                }
+            }
+
+            data = new_data;
+            renderGrid();
+        }
+
+        function onSearchInputChange() {
+            let searchText = document.getElementById('product-search').value;
+            filterProducts(searchText);
+        }
+        document.getElementById('product-search').addEventListener('input', onSearchInputChange);
+        renderGrid();
+    </script>
 {% endblock %}
