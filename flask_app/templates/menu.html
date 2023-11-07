@@ -77,6 +77,7 @@
         }
 
         function filteredData(searchText) {
+            data = all_data;
             searchText = searchText.toLowerCase();
             let new_data = {};
 
@@ -96,7 +97,7 @@
 
         function onSearchInputChange() {
             let searchText = document.getElementById('product-search').value;
-            filterProducts(searchText);
+            filteredData(searchText);
         }
         document.getElementById('product-search').addEventListener('input', onSearchInputChange);
         renderGrid();
