@@ -99,7 +99,7 @@ def filter_category(category_id):
         'wieght' : product.weight, 
         'price': product.price,
         'image_path' : product.image_path} for product in products]
-    return render_template('category_products.html', products=products, categories=Categories.query.all(), message='')
+    return render_template('category_products.html', products=products, categories=Categories.query.all())
 
 @login_manager.user_loader
 def load_user(user_id):
