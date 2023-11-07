@@ -101,26 +101,6 @@ def filter_category(category_id):
         'image_path' : product.image_path} for product in products]
     return render_template('category_products.html', products=products, categories=Categories.query.all(), message='')
 
-@app.route('/product_search', methods=['GET', 'POST'])
-def product_search():
-    products = []
-    word = request.args.get('word').lower()
-    regex_pattern = f'^(.*{word}.*)'
-    sql_query = text("SELECT id FROM products WHERE name ~* :regex_pattern")
-    res = db.session.execute(sql_query, {"regex_pattern": regex_pattern})
-    product_ids = res.fetchall()
-    for id in product_ids:
-        products.append(Products.query.get(id[0]))
-    products = [{
-        'name' : product.name, 
-        'wieght' : product.weight, 
-        'price': product.price,
-        'image_path' : product.image_path} for product in products]
-    if not products:
-        return render_template('category_products.html', products=products, categories=Categories.query.all(), message='Таких товаров не найдено..')
-    else:
-        return render_template('category_products.html', products=products, categories=Categories.query.all(), message='')
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter(User.id == user_id).first()
