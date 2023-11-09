@@ -109,7 +109,7 @@ def load_user(user_id):
 @app.route("/logout")
 def logout():
     logout_user()
-    return redirect("menu.html")
+    return redirect(url_for("menu"), 301)
 
 if __name__ == '__main__':
     with app.app_context():
