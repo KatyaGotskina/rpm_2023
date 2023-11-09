@@ -67,6 +67,9 @@
                             <div class="bottom-details d-flex justify-content-between">
                                 <p class="card-text">${product.weight} кг</p>
                                 <p class="card-text" style="font-size: 17px;">${product.price} руб</p>
+                                {% if current_user.is_authenticated %}
+                                    <a style="padding-top: 6px; font-size: 12px" href="#"><i class="fa-solid fa-basket-shopping fa-xl"></i></a>
+                                {% endif %}
                             </div>
                         </div>`;
                     slideContent.appendChild(productCard);
