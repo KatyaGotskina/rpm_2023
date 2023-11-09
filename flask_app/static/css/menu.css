@@ -15,7 +15,7 @@
       margin-left: 10px;
       border-radius: 10px;
       width: 200px;
-      height: 200px;
+      height: 202px;
   }
   
   
@@ -78,6 +78,7 @@
     right: 10px;
     margin-right: 20px;
     z-index: 999;
+    margin-top: 20px;
 }
 
 .search-box input {

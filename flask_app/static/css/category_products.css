@@ -69,6 +69,7 @@
     right: 10px;
     margin-right: 20px;
     z-index: 999;
+    margin-top: 20px;
 }
 
 .search-box input {
