@@ -109,15 +109,18 @@ def cart():
     products = [Products.query.get(product_id) for product_id in session["Cart"]["items"]]
     return render_template("cart.html", products=products)
 
-@app.route('/add_to_cart', methods=['GET', 'POST'])
+@app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
-    if request.method == 'POST':
-        product_id = request.form.get('product_id')
-        if "Cart" in session:
-            if not product_id in session["Cart"]["items"]:
-                session["Cart"]["items"][product_id] = {"product": product_id, "qty": 1}
-                session.modified = True
-        return redirect(url_for("menu"), 301)
+    product_id = request.json.get('product_id')
+    if "Cart" in session:
+        if not product_id in session["Cart"]["items"]:
+            session["Cart"]["items"][product_id] = {"qty": 1}
+            session.modified = True
+            return jsonify({'message': 'added'}), 200
+        else:
+            del session["Cart"]["items"][product_id]
+            session.modified = True
+            return jsonify({'message': 'deleted'}), 204
 
 @login_manager.user_loader
 def load_user(user_id):

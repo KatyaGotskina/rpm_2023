@@ -2,7 +2,7 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/menu.css') }}">
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 {% endblock %}
     {% block content %}
     <div class="search-box">
@@ -73,28 +73,21 @@
                         </div>`;
 
                     let bottomDetails = productCard.querySelector(".bottom-details.d-flex.justify-content-between");
-                    if (product_cart.includes(product.id)) {
-                        let icon = document.createElement('i');
-                        icon.className = "fa-solid fa-check fa-xl";
-                        icon.style.paddingTop = "15px";
-                        bottomDetails.appendChild(icon);
-                    }
-                    else {
-                    let form = document.createElement('form');
-                    form.action = "{{ url_for('add_to_cart') }}"; form.method = "post";
-                    let hiddenInput = document.createElement('input');
-                    hiddenInput.type = "text"; hiddenInput.name = "product_id"; hiddenInput.value = product.id;
-                    hiddenInput.style.display = "none";
                     let button = document.createElement('button');
-                    button.style = "border: 0cm; background-color: white; width: 40px; color: rgb(79, 115, 103); margin-top: 5px";
-                    button.type = "submit";
+                    button.style = "border: 0; background-color: transparent; cursor: pointer; color: rgb(79, 115, 103)";
+                    button.type = "button";
                     let icon = document.createElement('i');
-                    icon.className = "fa-solid fa-basket-shopping fa-xl";
+                    icon.style = "padding-bottom: 20px;";
+                    if (product_cart.includes(product.id)) {
+                        icon.className = "fa-solid fa-check fa-xl";} else {icon.className = "fa-solid fa-basket-shopping fa-xl"}
                     button.appendChild(icon);
-                    form.appendChild(hiddenInput);
-                    form.appendChild(button);
-                    bottomDetails.appendChild(form);;
+                    button.onclick = () => {
+                        axios.post('/add_to_cart', {'product_id' : product.id}).then((response) => { 
+                            if (response.status == 204) {button.innerHTML = '<i style="padding-bottom: 20px;" class="fa-solid fa-basket-shopping fa-xl"></i>'}
+                            else {button.innerHTML = '<i style="padding-bottom: 20px;" class="fa-solid fa-check fa-xl"></i>'} 
+                        })
                     }
+                    bottomDetails.appendChild(button);
                     slideContent.appendChild(productCard)
                 });
                 gridContainer.appendChild(slideContainer);
