@@ -1,0 +1,30 @@
+{% extends 'main.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/menu.css') }}">
+{% endblock %}
+    {% block content %}
+        <div class="conteiner">
+        <div class="main-part">
+            <div class="row justify-content-center">
+                {% for product in products %}
+                <div class="col-lg-2 col-sm-6">
+                    <div class="product-card" style="height: 220px; width: 200px;">
+                        <div class="prod-image">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}"><img src="{{ url_for('static', filename=product.image_path) }}" alt=""></a>
+
+                        </div>
+                        <div class="prod-details">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}">{{ product.name }}</a>
+                            <div class="bottom-details d-flex justify-content-between">
+                                <p class="card-text">{{ product.weight }} кг</p>
+                                <p class="card-text" style="font-size: 17px;">{{ product.price }} руб</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        </div>
+{% endblock %}

@@ -37,6 +37,8 @@ def signin():
             return redirect("/signin")
         if check_password_hash(user.password, password):
             login_user(user)
+            session["Cart"] = {"items": {}, "total": 0}
+            session.modified = True 
             return render_template('homepage.html')
         else:
             flash("Пароль не верен")
@@ -49,7 +51,6 @@ def signup():
     """Регистрация"""
 
     if request.method == 'POST':
-        name = request.form.get('name')
         username = request.form.get('username')
         password = request.form.get('password')
         last_name = request.form.get('last_name')
@@ -83,6 +84,7 @@ def menu():
     for category in categories:
         products = Products.query.filter(Products.category_id == category.id)
         products = [{
+            'id' : product.id,
             'name' : product.name, 
             'weight' : product.weight, 
             'price': product.price,
@@ -100,6 +102,21 @@ def filter_category(category_id):
         'price': product.price,
         'image_path' : product.image_path} for product in products]
     return render_template('category_products.html', products=products, categories=Categories.query.all())
+
+@app.route("/cart")
+def cart():
+    products = [Products.query.get(product_id) for product_id in session["Cart"]["items"]]
+    return render_template("cart.html", products=products)
+
+@app.route('/add_to_cart', methods=['GET', 'POST'])
+def add_to_cart():
+    if request.method == 'POST':
+        product_id = request.form.get('product_id')
+        if "Cart" in session:
+            if not product_id in session["Cart"]["items"]:
+                session["Cart"]["items"][product_id] = {"product": product_id, "qty": 1}
+                session.modified = True
+        return redirect(url_for("menu"), 301)
 
 @login_manager.user_loader
 def load_user(user_id):
