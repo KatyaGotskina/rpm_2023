@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, make_response, session, flash, get_flashed_messages
+from flask import Flask, render_template, url_for, request, redirect, make_response, session, flash, get_flashed_messages, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from flask_login import LoginManager, login_user, login_required, logout_user
@@ -90,6 +90,7 @@ def menu():
             'price': product.price,
             'image_path' : product.image_path} for product in products]
         context['data'][category.name] = products
+    context['product_ids'] = [i for i in session["Cart"]["items"]]
     return render_template('menu.html', **context)
 
 @app.route("/filter_category/<uuid:category_id>")
