@@ -7,3 +7,4 @@ Jinja2==3.1.2
 python-dotenv==1.0.0
 SQLAlchemy==2.0.22
 Werkzeug==2.3.0
+Flask-Admin==1.6.1
