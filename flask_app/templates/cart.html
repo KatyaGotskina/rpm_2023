@@ -1,30 +1,94 @@
 {% extends 'main.html' %}
 
 {% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/menu.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/category_products.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 {% endblock %}
-    {% block content %}
-        <div class="conteiner">
-        <div class="main-part">
-            <div class="row justify-content-center">
-                {% for product in products %}
-                <div class="col-lg-2 col-sm-6">
-                    <div class="product-card" style="height: 220px; width: 200px;">
-                        <div class="prod-image">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}"><img src="{{ url_for('static', filename=product.image_path) }}" alt=""></a>
+{% block content %}
+<div class="conteiner">
+    <div class="main-part" style="padding-left: 100px; padding-right: 100px; padding-top: 15px;">
+        <div class="row justify-content-center" id="gridContainer">
+        </div>
+    </div>
+</div>
+<h2>{{ total }}</h2>
 
-                        </div>
-                        <div class="prod-details">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#{{ product.id }}">{{ product.name }}</a>
-                            <div class="bottom-details d-flex justify-content-between">
-                                <p class="card-text">{{ product.weight }} кг</p>
-                                <p class="card-text" style="font-size: 17px;">{{ product.price }} руб</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        </div>
+<script>
+    function renderGrid(products) {
+        let gridContainer = document.getElementById('gridContainer');
+
+        products.forEach(product => {
+            let imageUrl = `http://localhost:5000/static/${product.image_path}`;
+            const column = document.createElement('div');
+            column.className = "col-lg-2 col-sm-6";
+            
+            const productCard = document.createElement('div');
+            productCard.className = "product-card";
+            productCard.style = "height: 220px; width: 200px;";
+            productCard.innerHTML = `<div class="prod-image">
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#${product.id}">
+                                            <img src="${imageUrl}">
+                                        </a>
+                                    </div>
+                                    <div class="prod-details">
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#${product.id}">${product.name}</a>
+                                        <div class="bottom-details d-flex justify-content-between">
+                                            <p class="card-text">${product.weight}кг</p>
+                                            <p class="card-text" style="font-size: 17px;">${product.price} руб</p>
+                                        </div>
+                                    </div>`;
+
+            column.appendChild(productCard);
+
+            const numberProds = document.createElement('div');
+            numberProds.className = "d-flex justify-content-between mt-2";
+
+            const deleteButton = document.createElement('button');
+            deleteButton.className = "minus";
+            const minusIcon = document.createElement('i');
+            minusIcon.className = "fa-solid fa-minus fa-xl";
+            deleteButton.appendChild(minusIcon);
+            const mainDeleteButton = document.createElement('button');
+            mainDeleteButton.className = "delete-poduct";
+            mainDeleteButton.textContent = "удалить";
+            mainDeleteButton.onclick = () => deleteProduct(product.id);
+
+            const qty = document.createElement('h3');
+            qty.className = "product-number";
+            qty.textContent = product.qty + 'шт';
+
+            const plusButton = document.createElement('button');
+            plusButton.className = "plus";
+            const plusIcon = document.createElement('i');
+            plusIcon.className = "fa-solid fa-plus fa-xl";
+            plusButton.appendChild(plusIcon);
+
+            numberProds.appendChild(deleteButton);
+            numberProds.appendChild(qty);
+            numberProds.appendChild(plusButton);
+
+            column.appendChild(numberProds);
+            column.appendChild(mainDeleteButton);
+            gridContainer.appendChild(column);
+        });
+        };
+    
+    let products = JSON.parse('{{ products|tojson|safe }}');
+    renderGrid(products)
+
+    function deleteProduct(productId) {
+        axios.delete('/del_prod_from_cart/' + productId)
+            .then(response => {
+                products = products.filter(product => product.id !== productId);
+                gridContainer.innerHTML = '';
+                renderGrid(products);
+            })
+            .catch(error => {
+                console.error('Error deleting product:', error);
+            });
+    }
+
+</script>
+
 {% endblock %}

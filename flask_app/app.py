@@ -4,7 +4,7 @@ import os
 from flask_login import LoginManager, login_user, login_required, logout_user
 from models import User, db, Categories, Products, Orders
 from flask_mail import Mail
-from sqlalchemy import text
+from decimal import Decimal
 
 
 app = Flask(__name__)
@@ -37,7 +37,7 @@ def signin():
             return redirect("/signin")
         if check_password_hash(user.password, password):
             login_user(user)
-            session["Cart"] = {"items": {}, "total": 0}
+            session["Cart"] = {"items": {}, "total": Decimal(0)}
             session.modified = True 
             return render_template('homepage.html')
         else:
@@ -107,7 +107,14 @@ def filter_category(category_id):
 @app.route("/cart")
 def cart():
     products = [Products.query.get(product_id) for product_id in session["Cart"]["items"]]
-    return render_template("cart.html", products=products)
+    products = [{
+            'qty' : session['Cart']['items'][str(product.id)]['qty'],
+            'id' : str(product.id),
+            'name' : product.name, 
+            'weight' : product.weight, 
+            'price': product.price,
+            'image_path' : product.image_path} for product in products]
+    return render_template("cart.html", products=products, total=session['Cart']['total'])
 
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
@@ -115,12 +122,29 @@ def add_to_cart():
     if "Cart" in session:
         if not product_id in session["Cart"]["items"]:
             session["Cart"]["items"][product_id] = {"qty": 1}
+            print()
+            print()
+            print()
+            print()
+            print(session['Cart']['total'], type(session['Cart']['total']))
+            print(type(Products.query.get(product_id).price))
+            #session['Cart']['total'] += Products.query.get(product_id).price
             session.modified = True
             return jsonify({'message': 'added'}), 200
         else:
             del session["Cart"]["items"][product_id]
+            #session['Cart']['total'] -= Products.query.get(product_id).price
             session.modified = True
             return jsonify({'message': 'deleted'}), 204
+
+@app.route('/del_prod_from_cart/<string:product_id>', methods=['DELETE'])
+def delete_from_cart(product_id):
+    if product_id in session["Cart"]["items"]:
+        print(session["Cart"]["items"])
+        del session["Cart"]["items"][product_id]
+        session.modified = True
+        #session['Cart']['total'] += Products.query.get(product_id).price
+        return jsonify({'message': 'deleted'}), 204
 
 @login_manager.user_loader
 def load_user(user_id):
