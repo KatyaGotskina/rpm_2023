@@ -1,0 +1,93 @@
+.main-part {
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 10px;
+  }
+  
+  .product-card:hover {
+      box-shadow: 10px 10px 40px 5px rgba(161, 212, 189, 1);
+  }
+  
+  .product-card {
+      border: thick double #34687d;
+      margin-bottom: 5px;
+      margin-top: 5px;
+      margin-left: 10px;
+      border-radius: 10px;
+      width: 200px;
+      height: 200px;
+  }
+  
+  
+  .prod-image a {
+      display: flex;
+      height: 120px;
+      padding: 3px;
+  }
+  
+  
+  .prod-image img {
+      max-width: 100%;
+      max-height: auto;
+  }
+  
+  
+  .prod-image {
+      padding-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+  
+  
+  .prod-details a {
+      text-decoration: none;
+      color: #5cab87;
+      text-align: center;
+      margin-left: 10px;
+      font-size: 15px;
+  }
+  
+  
+  .bottom-details {
+      border-top: 1px solid #2d7d59;
+      padding-top: 5px;
+      color: #61917c;
+      margin-right: 10px;
+      margin-left: 10px;
+      font-size: 13px;
+  }
+  
+  .bottom-details a {
+      color: #3c7d60;
+      font-size: 20px;
+  }
+
+
+  .search-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.search-box input {
+    border: thick double #25436b;
+    border-radius: 10px;
+    width: 300px;
+    padding: 5px;
+    font-size: 15px;
+    /* Другие стили по вашему усмотрению */
+}
+
+.archive-poduct {
+    width: 206px; 
+    height: 25px; 
+    margin-bottom: 10px; 
+    margin-left: 7px;
+    border-radius: 15px;
+    background-color: rgb(214, 73, 73);
+    border: none;
+    color: aliceblue;
+    font-size: 14px;
+}

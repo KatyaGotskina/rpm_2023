@@ -5,6 +5,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user
 from models import User, db, Categories, Products, Orders
 from flask_mail import Mail
 from decimal import Decimal
+from flask_admin import Admin, expose, BaseView
 
 
 app = Flask(__name__)
@@ -23,6 +24,23 @@ mail = Mail(app)
 
 db.init_app(app)
 
+class ProductsView(BaseView):
+    @expose("/")
+    def products(self):
+        return self.render('admin.html')
+
+admin = Admin(app) 
+admin.add_view(ProductsView(name='products'))
+
+@app.route('/get_products', methods=['GET'])
+def get_products():
+    products = Products.query.all()
+    products = [{
+        'name' : product.name, 
+        'weight' : product.weight, 
+        'price': product.price,
+        'image_path' : product.image_path} for product in products]
+    return jsonify(products), 200
 
 @app.route('/signin', methods=['POST', 'GET'])
 def signin():

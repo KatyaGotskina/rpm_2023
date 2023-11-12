@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_products.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="search-box">
+        <input type="text" id="product-search-cat" class="form-control" placeholder="Поиск...">
+    </div>
+    <div class="container">
+        <div class="main-part">
+            <div class="row justify-content-center" id="product-grid" style="padding-top: 30px;">
+            </div>
+        </div>
+    </div>
+    <script>
+        axios.get('/get_products')
+        .then(response => {
+            let products = response.data;
+            let all_prods = response.data;
+            renderGrid(all_prods);
+
+            function renderGrid(products) {
+                let gridContainer = document.getElementById('product-grid');
+                gridContainer.innerHTML = '';
+                products.forEach(function (product) {
+                    let productCard = document.createElement('div');
+                    productCard.className = 'col-lg-2 col-md-6 col-sm-12';
+                    let imageUrl = `http://localhost:5000/static/${product.image_path}`;
+                    productCard.innerHTML = `
+                        <div class="product-card">
+                            <div class="prod-image">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#${product.id}"><img src="${imageUrl}" class="img-fluid"></a>
+                            </div>
+                            <div class="prod-details">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#${product.id}">${product.name}</a>
+                                <div class="bottom-details d-flex justify-content-between">
+                                    <p class="card-text">${product.weight} кг</p>
+                                    <p class="card-text" style="font-size: 17px;">${product.price} руб</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    const archiveButton = document.createElement('button');
+                    archiveButton.className = "archive-poduct";
+                    archiveButton.textContent = "архивировать";
+                    productCard.appendChild(archiveButton);
+                    gridContainer.appendChild(productCard);
+                });
+            }
+
+            function filterProducts(searchText) {
+                let filteredProducts = all_prods.filter(function (product) {
+                    return product.name.toLowerCase().includes(searchText.toLowerCase());
+                });
+                renderGrid(filteredProducts);
+            }
+
+            function onSearchInputChange() {
+                let searchText = document.getElementById('product-search-cat').value;
+                filterProducts(searchText);
+            }
+
+            document.getElementById('product-search-cat').addEventListener('input', onSearchInputChange);
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    </script>
+</body>
+</html>
