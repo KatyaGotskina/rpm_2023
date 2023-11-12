@@ -7,6 +7,7 @@ from flask_mail import Mail
 from decimal import Decimal
 from flask_admin import Admin, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
+from api import api_bp
 
 
 app = Flask(__name__)
@@ -24,6 +25,8 @@ login_manager.init_app(app)
 mail = Mail(app)
 
 db.init_app(app)
+
+app.register_blueprint(api_bp, url_prefix="/api")  # регистрируем blueprint api в нашем приложении
 
 class ProductsView(BaseView):
     def is_accessible(self):
