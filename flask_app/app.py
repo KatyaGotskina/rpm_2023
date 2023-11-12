@@ -1,11 +1,12 @@
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, flash, get_flashed_messages, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from models import User, db, Categories, Products, Orders
 from flask_mail import Mail
 from decimal import Decimal
 from flask_admin import Admin, expose, BaseView
+from flask_admin.contrib.sqla import ModelView
 
 
 app = Flask(__name__)
@@ -25,12 +26,17 @@ mail = Mail(app)
 db.init_app(app)
 
 class ProductsView(BaseView):
+    def is_accessible(self):
+        return current_user.is_authenticated # change to check role
+
     @expose("/")
     def products(self):
         return self.render('admin.html')
 
 admin = Admin(app) 
-admin.add_view(ProductsView(name='products'))
+admin.add_view(ProductsView(name='work_with_products'))
+admin.add_view(ModelView(Products, db.session))   #How to protect?
+admin.add_view(ModelView(Categories, db.session))
 
 @app.route('/get_products', methods=['GET'])
 def get_products():
