@@ -8,6 +8,7 @@ from decimal import Decimal
 from flask_admin import Admin, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
 from api import api_bp
+from decimal import Decimal
 
 
 app = Flask(__name__)
@@ -149,28 +150,21 @@ def add_to_cart():
     if "Cart" in session:
         if not product_id in session["Cart"]["items"]:
             session["Cart"]["items"][product_id] = {"qty": 1}
-            print()
-            print()
-            print()
-            print()
-            print(session['Cart']['total'], type(session['Cart']['total']))
-            print(type(Products.query.get(product_id).price))
-            #session['Cart']['total'] += Products.query.get(product_id).price
+            session['Cart']['total'] = Decimal(session['Cart']['total']) + Products.query.get(product_id).price
             session.modified = True
             return jsonify({'message': 'added'}), 200
         else:
             del session["Cart"]["items"][product_id]
-            #session['Cart']['total'] -= Products.query.get(product_id).price
+            session['Cart']['total'] = Decimal(session['Cart']['total']) - Products.query.get(product_id).price
             session.modified = True
             return jsonify({'message': 'deleted'}), 204
 
 @app.route('/del_prod_from_cart/<string:product_id>', methods=['DELETE'])
 def delete_from_cart(product_id):
     if product_id in session["Cart"]["items"]:
-        print(session["Cart"]["items"])
         del session["Cart"]["items"][product_id]
         session.modified = True
-        #session['Cart']['total'] += Products.query.get(product_id).price
+        session['Cart']['total'] = Decimal(session['Cart']['total']) - Products.query.get(product_id).price
         return jsonify({'message': 'deleted'}), 204
 
 @login_manager.user_loader

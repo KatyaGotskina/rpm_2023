@@ -12,7 +12,7 @@
         </div>
     </div>
 </div>
-<h2>{{ total }}</h2>
+<h3 id="total">Итого: {{ total }}</h3>
 
 <script>
     function renderGrid(products) {
@@ -75,12 +75,16 @@
         };
     
     let products = JSON.parse('{{ products|tojson|safe }}');
+    let total = JSON.parse('{{ total|tojson|safe }}')
     renderGrid(products)
 
     function deleteProduct(productId) {
         axios.delete('/del_prod_from_cart/' + productId)
             .then(response => {
-                products = products.filter(product => product.id !== productId);
+                products.forEach(product => {
+                    if (product.id === productId) {products.pop(product); total -= product.price;};
+                })
+                document.getElementById('total').innerHTML = 'Итого: ' + total;
                 gridContainer.innerHTML = '';
                 renderGrid(products);
             })
