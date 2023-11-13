@@ -37,21 +37,60 @@ class ProductsView(BaseView):
     def products(self):
         return self.render('admin/admin.html')
 
-admin = Admin(app) 
-admin.add_view(ProductsView(name='work_with_products'))
-admin.add_view(ModelView(Products, db.session))   #How to protect?
-admin.add_view(ModelView(Categories, db.session))
+    @expose("/archive")
+    def archive_products(self):
+        return self.render('admin/archive.html')
 
-@app.route('/get_products', methods=['GET'])
+class ProtectedModelView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated # change to check role
+
+admin = Admin(app)
+admin.add_view(ProductsView(name='work_with_products'))
+admin.add_view(ProtectedModelView(Products, db.session))   #How to protect?
+admin.add_view(ProtectedModelView(Categories, db.session))
+
+
+#---------------------------------------------------------------------------------------
+@app.route('/get_active_products', methods=['GET'])
 def get_products():
-    products = Products.query.all()
+    products = Products.query.filter(Products.prod_status == 'active')
     products = [{
+        'id': product.id,
         'name' : product.name, 
         'weight' : product.weight, 
         'price': product.price,
         'image_path' : product.image_path} for product in products]
     return jsonify(products), 200
 
+@app.route('/get_archive_products', methods=['GET'])
+def get_archive_products():
+    products = Products.query.filter(Products.prod_status == 'inactive')
+    products = [{
+        'id': product.id,
+        'name' : product.name, 
+        'weight' : product.weight, 
+        'price': product.price,
+        'image_path' : product.image_path} for product in products]
+    return jsonify(products), 200
+
+@app.route('/make_archive', methods=['POST'])
+def make_prod_archive():
+    product_id = request.json.get('product_id')
+    product = Products.query.get(product_id)
+    product.prod_status = 'inactive'
+    db.session.commit()
+    return jsonify({'message': 'edited'}), 200
+
+@app.route('/restore', methods=['POST'])
+def make_prod_active():
+    product_id = request.json.get('product_id')
+    product = Products.query.get(product_id)
+    product.prod_status = 'active'
+    db.session.commit()
+    return jsonify({'message': 'edited'}), 200
+
+#--------------------------------------------------------------------------------------
 @app.route('/signin', methods=['POST', 'GET'])
 def signin():
     """Авторизация"""

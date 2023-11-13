@@ -15,7 +15,7 @@
         </div>
     </div>
     <script>
-        axios.get('/get_active_products')
+        axios.get('/get_archive_products')
         .then(response => {
             let products = response.data;
             let all_prods = response.data;
@@ -42,14 +42,15 @@
                             </div>
                         </div>
                     `;
-                    const archiveButton = document.createElement('button');
-                    archiveButton.className = "archive-poduct";
-                    archiveButton.textContent = "архивировать";
-                    archiveButton.onclick = () => axios.post('/make_archive', {'product_id' : product.id}).then((response) => {
-                        products = products.filter((elem) => elem.id !== product.id);
-                        renderGrid(products);
-                    })
-                    productCard.appendChild(archiveButton);
+                    const restoreButton = document.createElement('button');
+                    restoreButton.className = "restore-poduct";
+                    restoreButton.textContent = "восстановить";
+
+                    restoreButton.onclick = () => axios.post('/restore', {'product_id' : product.id}).then((response) => {
+                        products = products.filter(elem => elem.id !== product.id);
+                         renderGrid(products);
+                     })
+                    productCard.appendChild(restoreButton);
                     gridContainer.appendChild(productCard);
                 });
             }
