@@ -149,7 +149,9 @@ def menu():
     categories = list(Categories.query.filter(Categories.supercategory_id == None))
     context['categories'] = categories
     for category in categories:
-        products = Products.query.filter(Products.category_id == category.id)
+        products = Products.query.filter(Products.category_id == category.id).filter(Products.prod_status == 'active')
+        if not [i for i in products]:
+            continue
         products = [{
             'id' : product.id,
             'name' : product.name, 
@@ -163,7 +165,7 @@ def menu():
 @app.route("/filter_category/<uuid:category_id>")
 def filter_category(category_id):
     category = Categories.query.get(category_id)
-    products = Products.query.filter(Products.category_id == category.id)
+    products = Products.query.filter(Products.category_id == category.id).filter(Products.prod_status == 'active')
     products = [{
         'name' : product.name, 
         'wieght' : product.weight, 
