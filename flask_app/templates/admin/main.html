@@ -8,9 +8,10 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-success-subtle">
     <!-- <span class="navbar-brand mb-0 h1">Шестерочка</span> -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mm-auto mb-2 mb-lg-0" style="margin-left: 750px;"> 
-            <li class="nav-item active"><a class="nav-link" href="#">products</a></li>
-            <li class="nav-item"><a class="nav-link" href="./archive" style="padding-left: 40px;">archive</a></li>
+        <ul class="navbar-nav mm-auto mb-2 mb-lg-0" style="margin-left: 695px;">
+            <li class="nav-item active"><a class="nav-link" href="{{ url_for('admin.index') }}">admin</a></li> 
+            <li class="nav-item active"><a class="nav-link" href="{{ url_for('productsview.products') }}" style="padding-left: 40px;">products</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('productsview.archive_products') }}" style="padding-left: 40px;">archive</a></li>
             {% if current_user.is_authenticated %}
               <li class="nav-item"><a class="nav-link" href="#" style="color: red;"></a></li>
               <li class="nav-item"><a href="#" class="nav-link" style="padding-left: 630px;"><i class="fa-solid fa-user fa-lg"></i></a></li>
