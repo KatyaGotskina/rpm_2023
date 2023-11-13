@@ -5,6 +5,7 @@ import uuid
 from flask_login import UserMixin
 from datetime import datetime
 from config import *
+from sqlalchemy.orm import relationship
 
 
 db = SQLAlchemy()
@@ -23,6 +24,16 @@ class User(UUIDMixin, UserMixin, db.Model):
     username = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=False)
     password = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=False, unique=True)
+    roles = relationship("Role", secondary="roles_for_users", back_populates="users")
+
+class Role(UUIDMixin, db.Model):
+    name = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=False)
+    users = relationship("User", secondary="roles_for_users", back_populates="roles")
+
+
+class RolesForUsers(UUIDMixin, db.Model):
+    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('user.id'))
+    role_id = db.Column(UUID(as_uuid=True), db.ForeignKey('role.id'))
 
 
 class Categories(UUIDMixin, db.Model):

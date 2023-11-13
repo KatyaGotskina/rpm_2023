@@ -12,8 +12,9 @@ class ProtectedIndexView(flask_admin.AdminIndexView):
         if not login.current_user.is_authenticated:
             return redirect(url_for('signin'))
         admin = User.query.get(login.current_user.get_id())
-        return super(ProtectedIndexView, self).index()
-        #return redirect(url_for('login'))
+        if 'admin' in [role.name for role in admin.roles]:
+            return super(ProtectedIndexView, self).index()
+        return redirect(url_for('signin'))
 
 
 class ProtectedModelView(ModelView):
@@ -23,4 +24,6 @@ class ProtectedModelView(ModelView):
         if not login.current_user.is_authenticated:
             return False
         admin = User.query.get(login.current_user.get_id())
-        return True
+        if 'admin' in [role.name for role in admin.roles]:
+            return True
+        return False
