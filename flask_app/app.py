@@ -35,7 +35,7 @@ class ProductsView(BaseView):
 
     @expose("/")
     def products(self):
-        return self.render('admin.html')
+        return self.render('admin/admin.html')
 
 admin = Admin(app) 
 admin.add_view(ProductsView(name='work_with_products'))
