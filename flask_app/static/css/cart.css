@@ -32,3 +32,16 @@
     color: #2d7d59;
     font-size: 16px;
 }
+
+#to_buy {
+    height: 45px;
+    width: 250px;
+    border-radius: 10px;
+    border: none;
+    color: aliceblue;
+    font-size: 20px;
+    background-color: #4f8fe3;
+    position: fixed;
+    bottom: 40px; 
+    right: 40px;  
+}
