@@ -12,7 +12,8 @@
         </div>
     </div>
 </div>
-<h3 id="total">Итого: {{ total }}</h3>
+<h4 id="total" style="padding-left: 30px;">Итого: {{ total }}</h4>
+<button id="to_buy">Оформить заказ</button>
 
 <script>
     function renderGrid(products) {
@@ -82,8 +83,9 @@
         axios.delete('/del_prod_from_cart/' + productId)
             .then(response => {
                 products.forEach(product => {
-                    if (product.id === productId) {products.pop(product); total -= product.price;};
+                    if (product.id === productId) {total -= product.price;};
                 })
+                products = products.filter((product) => product.id !== productId);
                 document.getElementById('total').innerHTML = 'Итого: ' + total;
                 gridContainer.innerHTML = '';
                 renderGrid(products);
