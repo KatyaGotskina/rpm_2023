@@ -39,6 +39,7 @@
         let data = JSON.parse('{{ data|tojson|safe }}');
         let all_data = JSON.parse('{{ data|tojson|safe }}');
         let product_cart = JSON.parse('{{ product_ids|tojson|safe }}')
+        let user_is_auth = JSON.parse('{{ current_user.is_authenticated|tojson|safe }}')
 
         function renderGrid() {
             let gridContainer = document.querySelector('.main-part');
@@ -73,21 +74,23 @@
                         </div>`;
 
                     let bottomDetails = productCard.querySelector(".bottom-details.d-flex.justify-content-between");
-                    let button = document.createElement('button');
-                    button.style = "border: 0; background-color: transparent; cursor: pointer; color: rgb(79, 115, 103)";
-                    button.type = "button";
-                    let icon = document.createElement('i');
-                    icon.style = "padding-bottom: 20px;";
-                    if (product_cart.includes(product.id)) {
-                        icon.className = "fa-solid fa-check fa-xl";} else {icon.className = "fa-solid fa-basket-shopping fa-xl"}
-                    button.appendChild(icon);
-                    button.onclick = () => {
-                        axios.post('/add_to_cart', {'product_id' : product.id}).then((response) => { 
-                            if (response.status == 204) {button.innerHTML = '<i style="padding-bottom: 20px;" class="fa-solid fa-basket-shopping fa-xl"></i>'}
-                            else {button.innerHTML = '<i style="padding-bottom: 20px;" class="fa-solid fa-check fa-xl"></i>'} 
-                        })
+                    if (user_is_auth) {
+                        let button = document.createElement('button');
+                        button.style = "border: 0; background-color: transparent; cursor: pointer; color: rgb(79, 115, 103)";
+                        button.type = "button";
+                        let icon = document.createElement('i');
+                        icon.style = "padding-bottom: 20px;";
+                        if (product_cart.includes(product.id)) {
+                            icon.className = "fa-solid fa-check fa-xl";} else {icon.className = "fa-solid fa-basket-shopping fa-xl"}
+                        button.appendChild(icon);
+                        button.onclick = () => {
+                            axios.post('/add_to_cart', {'product_id' : product.id}).then((response) => { 
+                                if (response.status == 204) {button.innerHTML = '<i style="padding-bottom: 20px;" class="fa-solid fa-basket-shopping fa-xl"></i>'}
+                                else {button.innerHTML = '<i style="padding-bottom: 20px;" class="fa-solid fa-check fa-xl"></i>'} 
+                            })
+                        }
+                        bottomDetails.appendChild(button);
                     }
-                    bottomDetails.appendChild(button);
                     slideContent.appendChild(productCard)
                 });
                 gridContainer.appendChild(slideContainer);
