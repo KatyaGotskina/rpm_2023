@@ -6,9 +6,9 @@ from models import User, db, Categories, Products, Orders
 from flask_mail import Mail
 from decimal import Decimal
 from flask_admin import Admin, expose, BaseView
-from flask_admin.contrib.sqla import ModelView
 from api import api_bp
 from decimal import Decimal
+from admin_view import ProtectedIndexView, ProtectedModelView
 
 
 app = Flask(__name__)
@@ -41,13 +41,10 @@ class ProductsView(BaseView):
     def archive_products(self):
         return self.render('admin/archive.html')
 
-class ProtectedModelView(ModelView):
-    def is_accessible(self):
-        return current_user.is_authenticated # change to check role
 
-admin = Admin(app)
-admin.add_view(ProductsView(name='work_with_products'))
-admin.add_view(ProtectedModelView(Products, db.session))   #How to protect?
+admin = Admin(app, index_view=ProtectedIndexView())
+admin.add_view(ProductsView(name='work_with_products')) #, endpoint=
+admin.add_view(ProtectedModelView(Products, db.session))
 admin.add_view(ProtectedModelView(Categories, db.session))
 
 
