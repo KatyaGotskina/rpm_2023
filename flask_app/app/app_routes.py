@@ -1,6 +1,8 @@
 from app import app
-from .models import Products, Orders, db
-from flask import jsonify, request
+from .models import Products, Orders, db, User, OrdersToProducts
+from flask import jsonify, request, session
+from flask_login import current_user
+from decimal import Decimal
 
 
 @app.route('/get_active_products', methods=['GET'])
@@ -40,3 +42,29 @@ def make_prod_active():
     product.prod_status = 'active'
     db.session.commit()
     return jsonify({'message': 'edited'}), 200
+
+@app.route('/make_order')
+def make_order():
+    try:
+        user = User.query.get(current_user.get_id())
+        order = Orders(status='created', user_id=user.id)
+        db.session.add(order)
+        db.session.commit()
+        for product_id in session["Cart"]["items"]:
+            orderToProd = OrdersToProducts(product_id=product_id, order_id=order.id, number=session["Cart"]["items"][product_id]['qty'])
+            db.session.add(orderToProd)
+        session["Cart"] = {"items": {}, "total": Decimal(0)}
+        db.session.commit()
+        return jsonify({'message': 'created'}), 201
+    except Exception:
+        db.session.rollback()
+        return jsonify({'message': Exception}), 400
+
+@app.route('/user_orders', methods=['GET'])
+def get_user_orders():
+    orders = Orders.query.filter(Orders.user_id == current_user.get_id())
+    orders = [{
+        'date' : order.date,
+        'products': [product.image_path for product in order.products]
+    } for order in orders]
+    return jsonify(orders), 200
