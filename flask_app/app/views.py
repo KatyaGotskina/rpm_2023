@@ -1,7 +1,7 @@
 from flask import render_template, url_for, request, redirect, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
-from app.models import User, db, Categories, Products, Orders
+from app.models import User, Categories, Products, Orders, db
 from decimal import Decimal
 from app import app, login_manager
 
@@ -21,6 +21,8 @@ def signin():
             login_user(user)
             session["Cart"] = {"items": {}, "total": Decimal(0)}
             session.modified = True 
+            if 'admin' in [role.name for role in user.roles]:
+                return redirect('/admin')
             return render_template('homepage.html')
         else:
             flash("Пароль не верен")
@@ -45,8 +47,7 @@ def signup():
         try:
             db.session.add(new_user)
             db.session.commit()
-        except Exception:  # as err:
-            # print(err)
+        except Exception:
             return "Добавление не удалось"
         return redirect("/signin")
     return render_template('registration/signup.html')

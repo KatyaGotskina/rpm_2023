@@ -4,8 +4,8 @@ from flask_admin import expose
 from app.models import User
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import Admin, expose, BaseView, AdminIndexView
-from app import app, db
-from .models import User, Products, Categories
+from app import app
+from .models import User, Products, Categories, db
 
 
 class ProtectedIndexView(AdminIndexView):

@@ -4,9 +4,10 @@ import uuid
 from flask_login import UserMixin
 from datetime import datetime
 from sqlalchemy.orm import relationship
-from app import db 
+from flask_sqlalchemy import SQLAlchemy
 
 
+db = SQLAlchemy()
 metadata = db.metadata
 DEFAULT_STRING_VALUE = 100
 
