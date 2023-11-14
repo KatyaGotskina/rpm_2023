@@ -8,5 +8,3 @@ python-dotenv==1.0.0
 SQLAlchemy==2.0.22
 Werkzeug==2.3.0
 Flask-Admin==1.6.1
-flask_script==2.0.6
-flask_migrate==4.0.5
