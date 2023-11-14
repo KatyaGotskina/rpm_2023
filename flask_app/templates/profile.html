@@ -1,0 +1,15 @@
+{% extends 'main.html' %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="main-part">
+    <h2 style="padding-top: 30px;">
+        {{ full_name }}
+    </h2>
+    <p>
+        {{ email }}
+    </p>
+</div>
+{% endblock %}

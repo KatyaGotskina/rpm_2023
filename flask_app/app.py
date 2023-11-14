@@ -215,6 +215,13 @@ def logout():
     logout_user()
     return redirect(url_for("menu"), 301)
 
+@app.route('/profile')
+def profile():
+    user = User.query.get(current_user.get_id())
+    full_name =(f'{user.last_name} {user.first_name} {user.surname}')
+    return render_template('profile.html', email=user.email, full_name=full_name)
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
