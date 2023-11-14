@@ -13,7 +13,7 @@
     </div>
 </div>
 <h4 id="total" style="padding-left: 30px;">Итого: {{ total }}</h4>
-<button id="to_buy">Оформить заказ</button>
+<button id="to_buy" onclick="makeOrder()">Оформить заказ</button>
 
 <script>
     function renderGrid(products) {
@@ -95,6 +95,17 @@
             });
     }
 
+    function makeOrder() {
+        axios.get('/make_order').then(response => {
+            products = [];
+            document.getElementById('total').innerHTML = 'Итого: ' + 0;
+            gridContainer.innerHTML = '';
+            renderGrid(products)
+        })
+        .catch(error => {
+                console.error('Error deleting product:', error);
+            })
+    }
 </script>
 
 {% endblock %}

@@ -1,7 +1,7 @@
 from flask import render_template, url_for, request, redirect, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
-from app.models import User, Categories, Products, Orders, db
+from app.models import User, Categories, Products, db
 from decimal import Decimal
 from app import app, login_manager
 

@@ -11,5 +11,28 @@
     <p>
         {{ email }}
     </p>
+    <div id="orders">
+    </div>
 </div>
+<script>
+    ordersDiv = document.getElementById('orders')
+    axios.get('/user_orders').then(response => {
+            let orders = response.data;
+            orders.forEach(order => {
+                orderDiv = document.createElement('div');
+                OrderDate = document.createElement('p');
+                OrderDate.textContent = order.date;
+                orderDiv.appendChild(OrderDate);
+                productsDiv = document.createElement('div');
+                order.products.forEach(image_path => {
+                    image = document.createElement('img');
+                    image.src = `http://localhost:5000/static/${image_path}`;
+                    productsDiv.appendChild(image);
+                })
+                orderDiv.appendChild(productsDiv);
+                ordersDiv.appendChild(orderDiv);
+            });
+        }
+    )
+</script>
 {% endblock %}
