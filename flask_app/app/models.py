@@ -47,6 +47,7 @@ class Orders(UUIDMixin, db.Model):
     status = name = db.Column(db.String(DEFAULT_STRING_VALUE))
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
         'user.id', ondelete='SET NULL'), nullable=True)
+    products = relationship("Products", secondary="orders_to_products", back_populates="orders")
 
 
 class Products(UUIDMixin, db.Model):
@@ -61,7 +62,7 @@ class Products(UUIDMixin, db.Model):
     price = db.Column(DECIMAL(precision=10, scale=2), nullable=False)
     prod_status = db.Column(db.String(DEFAULT_STRING_VALUE))
     image_path = db.Column(db.String(DEFAULT_STRING_VALUE))
-
+    orders = relationship("Orders", secondary="orders_to_products", back_populates="products")
 
 class OrdersToProducts(UUIDMixin, db.Model):
     product_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
