@@ -1,93 +1,11 @@
-from flask import Flask, render_template, url_for, request, redirect, make_response, session, flash, get_flashed_messages, jsonify
+from flask import render_template, url_for, request, redirect, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-import os
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from models import User, db, Categories, Products, Orders
-from flask_mail import Mail
+from flask_login import login_user, login_required, logout_user, current_user
+from app.models import User, db, Categories, Products, Orders
 from decimal import Decimal
-from flask_admin import Admin, expose, BaseView
-from api import api_bp
-from decimal import Decimal
-from admin_view import ProtectedIndexView, ProtectedModelView
+from app import app, login_manager
 
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://katya:kbwtq12345F@localhost:5432/flask_app'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = os.getenv('SECRET_KEY')
-app.config['MAIL_SERVER'] = "smtp.gmail.com"
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-# app.config['MAIL_USERNAME'] = os.environ.get('mail')
-# app.config['MAIL_PASSWORD'] = os.environ.get('password')
-# app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('mail')
-login_manager = LoginManager()
-login_manager.init_app(app)
-mail = Mail(app)
-
-db.init_app(app)
-
-app.register_blueprint(api_bp, url_prefix="/api")  # регистрируем blueprint api в нашем приложении
-
-class ProductsView(BaseView):
-    def is_accessible(self):
-        return current_user.is_authenticated # change to check role
-
-    @expose("/")
-    def products(self):
-        return self.render('admin/admin.html')
-
-    @expose("/archive")
-    def archive_products(self):
-        return self.render('admin/archive.html')
-
-
-admin = Admin(app, index_view=ProtectedIndexView())
-admin.add_view(ProductsView(name='work_with_products')) #, endpoint=
-admin.add_view(ProtectedModelView(Products, db.session))
-admin.add_view(ProtectedModelView(Categories, db.session))
-
-
-#---------------------------------------------------------------------------------------
-@app.route('/get_active_products', methods=['GET'])
-def get_products():
-    products = Products.query.filter(Products.prod_status == 'active')
-    products = [{
-        'id': product.id,
-        'name' : product.name, 
-        'weight' : product.weight, 
-        'price': product.price,
-        'image_path' : product.image_path} for product in products]
-    return jsonify(products), 200
-
-@app.route('/get_archive_products', methods=['GET'])
-def get_archive_products():
-    products = Products.query.filter(Products.prod_status == 'inactive')
-    products = [{
-        'id': product.id,
-        'name' : product.name, 
-        'weight' : product.weight, 
-        'price': product.price,
-        'image_path' : product.image_path} for product in products]
-    return jsonify(products), 200
-
-@app.route('/make_archive', methods=['POST'])
-def make_prod_archive():
-    product_id = request.json.get('product_id')
-    product = Products.query.get(product_id)
-    product.prod_status = 'inactive'
-    db.session.commit()
-    return jsonify({'message': 'edited'}), 200
-
-@app.route('/restore', methods=['POST'])
-def make_prod_active():
-    product_id = request.json.get('product_id')
-    product = Products.query.get(product_id)
-    product.prod_status = 'active'
-    db.session.commit()
-    return jsonify({'message': 'edited'}), 200
-
-#--------------------------------------------------------------------------------------
 @app.route('/signin', methods=['POST', 'GET'])
 def signin():
     """Авторизация"""
@@ -221,8 +139,3 @@ def profile():
     full_name =(f'{user.last_name} {user.first_name} {user.surname}')
     return render_template('profile.html', email=user.email, full_name=full_name)
 
-
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)

@@ -1,15 +1,14 @@
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DECIMAL
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from flask_login import UserMixin
 from datetime import datetime
-from config import *
 from sqlalchemy.orm import relationship
+from app import db 
 
 
-db = SQLAlchemy()
 metadata = db.metadata
+DEFAULT_STRING_VALUE = 100
 
 
 class UUIDMixin:

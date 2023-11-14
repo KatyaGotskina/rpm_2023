@@ -1,5 +1,5 @@
-from flask import Blueprint, jsonify, current_app, request, abort
-from models import Categories, Products
+from flask import Blueprint, jsonify
+from app.models import Categories, Products
 
 api_bp = Blueprint("api", __name__, template_folder="templates", static_folder="static")  # создаем объект Blueprint
 
