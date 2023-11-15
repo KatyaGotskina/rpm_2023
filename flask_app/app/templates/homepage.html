@@ -1,8 +1,15 @@
 {% extends 'main.html' %}
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 {% endblock %}
 {% block content %}
+<div id="overlay"></div>
+<div id="popup">
+    <p>Мы используем куки файлы</p>
+    <button onclick="UseCookie()" class="cookie-button">OK</button>
+    <button onclick="DontUseCookie()" style="background-color: rgb(187, 33, 72); border-color: white;">NO</button>
+</div>
 <div class="container">
     <div class="row justify-content-center align-items-center d-flex">
     <!-- Карточка №1 -->
@@ -53,4 +60,31 @@
         </div>
     </div>
 </div>
+
+<script>
+    let cookie_flag = JSON.parse('{{ cookie_flag|tojson|safe }}')
+
+    function closePopup() {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('popup').style.display = 'none';
+    }
+
+    function openPopup() {
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('popup').style.display = 'block';
+    }
+
+    function UseCookie() {
+        axios.get('/add_cookies')
+        closePopup();
+    }
+
+    function DontUseCookie() {
+        closePopup();
+    }
+
+   window.onload = function() {
+    if (!cookie_flag) { openPopup()};
+};
+</script>
 {% endblock %}

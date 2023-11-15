@@ -1,9 +1,11 @@
-from flask import render_template, url_for, request, redirect, session, flash, jsonify
+from flask import render_template, url_for, request, redirect, session, flash, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from app.models import User, Categories, Products, db
 from decimal import Decimal
 from app import app, login_manager
+from flask_mail import Message
+from app import mail
 
 
 @app.route('/signin', methods=['POST', 'GET'])
@@ -56,7 +58,7 @@ def signup():
 @app.route('/')
 @app.route('/homepage')
 def homepage():
-    return render_template('homepage.html')
+    return render_template('homepage.html', cookie_flag=session.get('cookie_flag'))
 
 @app.route('/menu')
 def menu():
@@ -140,3 +142,16 @@ def profile():
     full_name =(f'{user.last_name} {user.first_name} {user.surname}')
     return render_template('profile.html', email=user.email, full_name=full_name)
 
+COMPANY_MAIL = 'katya.gotskina@gmail.com'
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        email = request.form.get("email")
+        phone = request.form.get("phone")
+        message = request.form.get("message")
+        msg = Message("Клиент оставил обращение на сайте", recipients=[COMPANY_MAIL], sender=COMPANY_MAIL)
+        msg.body = f"Номер телефона клиента: {phone}, почта: {email} сообщение от клиента: {message}"
+        mail.send(msg)
+        return redirect('/homepage')
+    return render_template('contact.html') 

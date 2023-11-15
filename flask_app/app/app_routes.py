@@ -1,6 +1,6 @@
 from app import app
 from .models import Products, Orders, db, User, OrdersToProducts
-from flask import jsonify, request, session
+from flask import jsonify, request, session, make_response, render_template
 from flask_login import current_user
 from decimal import Decimal
 
@@ -68,3 +68,26 @@ def get_user_orders():
         'products': [product.image_path for product in order.products]
     } for order in orders]
     return jsonify(orders), 200
+
+@app.route('/add_cookies')
+def cookies():
+    user = User.query.get(current_user.get_id())
+    res = make_response(render_template('homepage.html', cookie_flag=True)) 
+    res.set_cookie("name", user.first_name, max_age=60 * 60 * 24)
+    session['cookie_flag'] = True
+    return res
+
+
+@app.route('/show_cookies')
+def show():
+    if request.cookies.get("name"):  # проверяем есть ли кука Name
+        return "Hello " + request.cookies.get("name")
+    else:
+        return "Кук нет"
+
+@app.route('/delete_cookies')
+def delete_cookies():
+    res = make_response(render_template('homepage.html', cookie_flag=False)) 
+    res.set_cookie("name", "noname", max_age=0)
+    del session['cookie_flag']
+    return res

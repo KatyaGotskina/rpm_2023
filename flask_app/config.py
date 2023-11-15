@@ -13,8 +13,8 @@ class BaseConfig:
     MAIL_SERVER = "smtp.gmail.com"
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = getenv('MAIL_USERNAME') or 'YOU_MAIL@gmail.com'
-    MAIL_PASSWORD = getenv('MAIL_PASSWORD') or 'password'
+    MAIL_USERNAME = getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = getenv('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = MAIL_USERNAME
 
 
