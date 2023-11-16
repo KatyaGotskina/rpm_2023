@@ -15,7 +15,7 @@ class BaseConfig:
     MAIL_USE_TLS = True
     MAIL_USERNAME = getenv('MAIL_USERNAME')
     MAIL_PASSWORD = getenv('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = MAIL_USERNAME
+    MAIL_DEFAULT_SENDER = getenv('MAIL_USERNAME')
 
 
 class DevelopementConfig(BaseConfig):

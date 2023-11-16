@@ -6,6 +6,11 @@ from decimal import Decimal
 from app import app, login_manager
 from flask_mail import Message
 from app import mail
+from os import getenv
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 
 @app.route('/signin', methods=['POST', 'GET'])
@@ -25,7 +30,7 @@ def signin():
             session.modified = True 
             if 'admin' in [role.name for role in user.roles]:
                 return redirect('/admin')
-            return render_template('homepage.html')
+            return render_template('homepage.html', cookie_flag=session.get('cookie_flag'))
         else:
             flash("Пароль не верен")
             return redirect("/signin")
@@ -142,15 +147,14 @@ def profile():
     full_name =(f'{user.last_name} {user.first_name} {user.surname}')
     return render_template('profile.html', email=user.email, full_name=full_name)
 
-COMPANY_MAIL = 'katya.gotskina@gmail.com'
-
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
+    print(app.config)
     if request.method == 'POST':
         email = request.form.get("email")
         phone = request.form.get("phone")
         message = request.form.get("message")
-        msg = Message("Клиент оставил обращение на сайте", recipients=[COMPANY_MAIL], sender=COMPANY_MAIL)
+        msg = Message("Клиент оставил обращение на сайте", recipients=[getenv('COMPANY_MAIL')])
         msg.body = f"Номер телефона клиента: {phone}, почта: {email} сообщение от клиента: {message}"
         mail.send(msg)
         return redirect('/homepage')
