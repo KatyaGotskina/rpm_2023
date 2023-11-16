@@ -3,8 +3,8 @@
     <title>Login Page with Background Image Example</title>
     <link rel="stylesheet" href="{{ url_for('static',filename='css/contacts.css') }}">
     </head>
-    <body>
-    
+    <body>      
+    <button style="margin-left: 30px; margin-top: 30px"><a href="{{ url_for('menu') }}" style="text-decoration: none; color: white">Вернуться в меню</a></button>
     <div id="bg"></div>
         <form action="/contact" method="post">
             <div class="form-field">
@@ -19,7 +19,6 @@
                 <button class="btn" type="submit">Свяжитесь со мной</button>
             </div>
         </form>
-    
     
     <script async="true" type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-2BMVGTJJG1&amp;l=dataLayer&amp;cx=c"></script><script async="true" type="text/javascript" src="https://www.google-analytics.com/analytics.js"></script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-80520768-2" type="text/javascript"></script>
     <script type="text/javascript">
