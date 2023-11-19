@@ -108,29 +108,6 @@ def cart():
             'image_path' : product.image_path} for product in products]
     return render_template("cart.html", products=products, total=session['Cart']['total'])
 
-@app.route('/add_to_cart', methods=['POST'])
-def add_to_cart():
-    product_id = request.json.get('product_id')
-    if "Cart" in session:
-        if not product_id in session["Cart"]["items"]:
-            session["Cart"]["items"][product_id] = {"qty": 1}
-            session['Cart']['total'] = Decimal(session['Cart']['total']) + Products.query.get(product_id).price
-            session.modified = True
-            return jsonify({'message': 'added'}), 200
-        else:
-            del session["Cart"]["items"][product_id]
-            session['Cart']['total'] = Decimal(session['Cart']['total']) - Products.query.get(product_id).price
-            session.modified = True
-            return jsonify({'message': 'deleted'}), 204
-
-@app.route('/del_prod_from_cart/<string:product_id>', methods=['DELETE'])
-def delete_from_cart(product_id):
-    if product_id in session["Cart"]["items"]:
-        del session["Cart"]["items"][product_id]
-        session.modified = True
-        session['Cart']['total'] = Decimal(session['Cart']['total']) - Products.query.get(product_id).price
-        return jsonify({'message': 'deleted'}), 204
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter(User.id == user_id).first()

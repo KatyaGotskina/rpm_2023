@@ -91,3 +91,54 @@ def delete_cookies():
     res.set_cookie("name", "noname", max_age=0)
     del session['cookie_flag']
     return res
+
+@app.route('/minus_qty/<string:product_id>')
+def minus_product_qty(product_id):
+    product = Products.query.get(product_id)
+    session['Cart']['items'][str(product_id)]['qty'] -= 1
+    session.modified = True
+    num = session['Cart']['items'][str(product_id)]['qty']
+    session['Cart']['total'] = Decimal(session['Cart']['total']) - product.price
+    return ({'massege' : 'not found'}, 204) if num == 0 else ({'num' : num, 'total' : session['Cart']['total']}, 200)
+
+@app.route('/plus_qty/<string:product_id>')
+def plus_product_qty(product_id):
+    product = Products.query.get(product_id)
+    session['Cart']['total'] = Decimal(session['Cart']['total']) + product.price
+    session['Cart']['items'][str(product_id)]['qty'] += 1
+    session.modified = True
+    num = session['Cart']['items'][str(product_id)]['qty']
+    result = {'num' : num, 'total' : session['Cart']['total']}
+    return (result, 202) if num == product.number else (result, 200)
+
+@app.route('/check_quatity/<uuid:product_id>')
+def check_quatity(product_id):
+    product = Products.query.get(product_id)
+    return ({'massege' : 'full'}, 202) if session['Cart']['items'][str(product_id)]['qty'] == product.number else ({'massege' : 'good'}, 200)
+
+@app.route('/del_prod_from_cart/<string:product_id>', methods=['DELETE'])
+def delete_from_cart(product_id):
+    if product_id in session["Cart"]["items"]:
+        session['Cart']['total'] = Decimal(session['Cart']['total']) - Products.query.get(product_id).price * session["Cart"]["items"][product_id]['qty']
+        del session["Cart"]["items"][product_id]
+        session.modified = True
+        return {'massege' : 'deleted'}, 204
+
+@app.route('/add_to_cart', methods=['POST'])
+def add_to_cart():
+    product_id = request.json.get('product_id')
+    if "Cart" in session:
+        if not product_id in session["Cart"]["items"]:
+            session["Cart"]["items"][product_id] = {"qty": 1}
+            session['Cart']['total'] = Decimal(session['Cart']['total']) + Products.query.get(product_id).price
+            session.modified = True
+            return jsonify({'message': 'added'}), 200
+        else:
+            del session["Cart"]["items"][product_id]
+            session['Cart']['total'] = Decimal(session['Cart']['total']) - Products.query.get(product_id).price
+            session.modified = True
+            return jsonify({'message': 'deleted'}), 204
+
+@app.route('/get_total')
+def get_total():
+    return {'total': session['Cart']['total']}, 200

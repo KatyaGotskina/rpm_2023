@@ -50,6 +50,17 @@
             const minusIcon = document.createElement('i');
             minusIcon.className = "fa-solid fa-minus fa-xl";
             deleteButton.appendChild(minusIcon);
+            deleteButton.onclick = () => {
+                axios.get('/minus_qty/' + product.id).then(response => {
+                    if (response.status == 204) {deleteProduct(product.id)}
+                    else {
+                        document.getElementById('total').innerHTML = 'Итого: ' + response.data.total; 
+                        qty.textContent = response.data.num + 'шт'; 
+                        plusButton.disabled = false;
+                        plusButton.style.color = '#2d7d59';
+                    }
+                }) 
+            };
             const mainDeleteButton = document.createElement('button');
             mainDeleteButton.className = "delete-poduct";
             mainDeleteButton.textContent = "удалить";
@@ -64,6 +75,22 @@
             const plusIcon = document.createElement('i');
             plusIcon.className = "fa-solid fa-plus fa-xl";
             plusButton.appendChild(plusIcon);
+            axios.get('/check_quatity/' +product.id).then(response => {
+                if (response.status == 202) {
+                    plusButton.disabled = true;
+                    plusButton.style.color = 'red';
+                }
+            })
+            plusButton.onclick = () => {
+                axios.get('/plus_qty/' + product.id).then(response => {
+                    document.getElementById('total').innerHTML = 'Итого: ' + response.data.total; 
+                    qty.textContent = response.data.num + 'шт';
+                    if (response.status == 202) { 
+                        plusButton.disabled = true;
+                        plusButton.style.color = 'red';
+                    }
+                })
+            }
 
             numberProds.appendChild(deleteButton);
             numberProds.appendChild(qty);
@@ -82,11 +109,8 @@
     function deleteProduct(productId) {
         axios.delete('/del_prod_from_cart/' + productId)
             .then(response => {
-                products.forEach(product => {
-                    if (product.id === productId) {total -= product.price;};
-                })
                 products = products.filter((product) => product.id !== productId);
-                document.getElementById('total').innerHTML = 'Итого: ' + total;
+                axios.get('/get_total').then(response => document.getElementById('total').innerHTML = 'Итого: ' + response.data.total);
                 gridContainer.innerHTML = '';
                 renderGrid(products);
             })
@@ -98,7 +122,8 @@
     function makeOrder() {
         axios.get('/make_order').then(response => {
             products = [];
-            document.getElementById('total').innerHTML = 'Итого: ' + 0;
+            total = 0;
+            document.getElementById('total').innerHTML = 'Итого: ' + total;
             gridContainer.innerHTML = '';
             renderGrid(products)
         })
