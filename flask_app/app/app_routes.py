@@ -51,6 +51,11 @@ def make_order():
         db.session.add(order)
         db.session.commit()
         for product_id in session["Cart"]["items"]:
+            product = Products.query.get(product_id)
+            product.number -= session["Cart"]["items"][product_id]['qty']
+            db.session.commit()
+            if product.number == 0:
+                product.prod_status = 'inactive'
             orderToProd = OrdersToProducts(product_id=product_id, order_id=order.id, number=session["Cart"]["items"][product_id]['qty'])
             db.session.add(orderToProd)
         session["Cart"] = {"items": {}, "total": Decimal(0)}
