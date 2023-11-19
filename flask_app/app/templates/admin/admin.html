@@ -49,6 +49,30 @@
                         products = products.filter((elem) => elem.id !== product.id);
                         renderGrid(products);
                     })
+                    const numField = document.createElement('p');
+                    numField.textContent = product.number;
+                    numField.style.textAlign = 'center';
+                    numField.style.marginBottom = "5px";
+                    const addNumProd = document.createElement('form');
+                    addNumProd.addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        const number = inputField.value;
+                        axios.post('/admin_add_number/' + product.id, {'number' : number})
+                            .then(function(response) {
+                            if (response.status == 200) {numField.textContent = number}
+                            });
+                        });
+                    addNumProd.className = "add-number-prods-form";
+                    const inputField = document.createElement('input');
+                    inputField.className = "add-number-input";
+                    inputField.type = 'text';
+                    addNumProd.appendChild(inputField);
+                    const submit = document.createElement('button');
+                    submit.className = "add-number-button"
+                    submit.textContent = 'ок';
+                    addNumProd.appendChild(submit);
+                    productCard.appendChild(numField);
+                    productCard.appendChild(addNumProd);
                     productCard.appendChild(archiveButton);
                     gridContainer.appendChild(productCard);
                 });

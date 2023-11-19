@@ -17,7 +17,7 @@ class UUIDMixin:
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
 
-class User(UUIDMixin, UserMixin, db.Model): 
+class User(UUIDMixin, UserMixin, db.Model):
     first_name = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=False)
     last_name = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=False)
     surname = db.Column(db.String(DEFAULT_STRING_VALUE))
@@ -25,6 +25,7 @@ class User(UUIDMixin, UserMixin, db.Model):
     password = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=False, unique=True)
     roles = relationship("Role", secondary="roles_for_users", back_populates="users")
+
 
 class Role(UUIDMixin, db.Model):
     name = db.Column(db.String(DEFAULT_STRING_VALUE), nullable=False)
@@ -63,6 +64,7 @@ class Products(UUIDMixin, db.Model):
     prod_status = db.Column(db.String(DEFAULT_STRING_VALUE))
     image_path = db.Column(db.String(DEFAULT_STRING_VALUE))
     orders = relationship("Orders", secondary="orders_to_products", back_populates="products")
+
 
 class OrdersToProducts(UUIDMixin, db.Model):
     product_id = db.Column(UUID(as_uuid=True), db.ForeignKey(

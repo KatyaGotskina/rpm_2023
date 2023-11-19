@@ -103,3 +103,29 @@
     color: aliceblue;
     font-size: 14px;
 }
+
+.add-number-prods-form {
+    padding-left: 22px;
+    padding-bottom: 5px;
+    display: flex; 
+    justify-content: 
+    space-between; 
+    align-items: center;
+    border-radius: 25px;
+}
+
+.add-number-input {
+    width: 100px; 
+    margin-right: 10px;
+    border-radius: 25px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.add-number-button {
+    width: 80px;
+    border-radius: 25px;
+    background-color: #2d9c6a;
+    color: white;
+    font-size: 12px;
+}

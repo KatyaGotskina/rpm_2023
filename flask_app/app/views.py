@@ -1,4 +1,4 @@
-from flask import render_template, url_for, request, redirect, session, flash, jsonify, make_response
+from flask import render_template, url_for, request, redirect, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from app.models import User, Categories, Products, db
@@ -27,7 +27,7 @@ def signin():
         if check_password_hash(user.password, password):
             login_user(user)
             session["Cart"] = {"items": {}, "total": Decimal(0)}
-            session.modified = True 
+            session.modified = True
             if 'admin' in [role.name for role in user.roles]:
                 return redirect('/admin')
             return render_template('homepage.html', cookie_flag=session.get('cookie_flag'))
@@ -65,6 +65,7 @@ def signup():
 def homepage():
     return render_template('homepage.html', cookie_flag=session.get('cookie_flag'))
 
+
 @app.route('/menu')
 def menu():
     context = {}
@@ -72,45 +73,51 @@ def menu():
     categories = list(Categories.query.filter(Categories.supercategory_id == None))
     context['categories'] = categories
     for category in categories:
-        products = Products.query.filter(Products.category_id == category.id).filter(Products.prod_status == 'active')
+        products = Products.query.filter(Products.category_id == category.id).filter(
+            Products.prod_status == 'active')
         if not [i for i in products]:
             continue
         products = [{
-            'id' : product.id,
-            'name' : product.name, 
-            'weight' : product.weight, 
+            'id': product.id,
+            'name': product.name,
+            'weight': product.weight,
             'price': product.price,
-            'image_path' : product.image_path} for product in products]
+            'image_path': product.image_path} for product in products]
         context['data'][category.name] = products
     context['product_ids'] = [i for i in session["Cart"]["items"]]
     return render_template('menu.html', **context)
 
+
 @app.route("/filter_category/<uuid:category_id>")
 def filter_category(category_id):
     category = Categories.query.get(category_id)
-    products = Products.query.filter(Products.category_id == category.id).filter(Products.prod_status == 'active')
+    products = Products.query.filter(Products.category_id == category.id).filter(
+        Products.prod_status == 'active')
     products = [{
-        'name' : product.name, 
-        'wieght' : product.weight, 
+        'name': product.name,
+        'wieght': product.weight,
         'price': product.price,
-        'image_path' : product.image_path} for product in products]
+        'image_path': product.image_path} for product in products]
     return render_template('category_products.html', products=products, categories=Categories.query.all())
+
 
 @app.route("/cart")
 def cart():
     products = [Products.query.get(product_id) for product_id in session["Cart"]["items"]]
     products = [{
-            'qty' : session['Cart']['items'][str(product.id)]['qty'],
-            'id' : str(product.id),
-            'name' : product.name, 
-            'weight' : product.weight, 
-            'price': product.price,
-            'image_path' : product.image_path} for product in products]
+        'qty': session['Cart']['items'][str(product.id)]['qty'],
+        'id': str(product.id),
+        'name': product.name,
+        'weight': product.weight,
+        'price': product.price,
+        'image_path': product.image_path} for product in products]
     return render_template("cart.html", products=products, total=session['Cart']['total'])
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter(User.id == user_id).first()
+
 
 @login_required
 @app.route("/logout")
@@ -118,11 +125,13 @@ def logout():
     logout_user()
     return redirect(url_for("menu"), 301)
 
+
 @app.route('/profile')
 def profile():
     user = User.query.get(current_user.get_id())
-    full_name =(f'{user.last_name} {user.first_name} {user.surname}')
+    full_name = (f'{user.last_name} {user.first_name} {user.surname}')
     return render_template('profile.html', email=user.email, full_name=full_name)
+
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -135,4 +144,4 @@ def contact():
         msg.body = f"Номер телефона клиента: {phone}, почта: {email} сообщение от клиента: {message}"
         mail.send(msg)
         return redirect('/homepage')
-    return render_template('contact.html') 
+    return render_template('contact.html')

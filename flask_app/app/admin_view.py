@@ -45,6 +45,6 @@ class ProductsView(BaseView):
 
 
 admin = Admin(app, index_view=ProtectedIndexView())
-admin.add_view(ProductsView(name='work_with_products')) #, endpoint=
+admin.add_view(ProductsView(name='work_with_products'))  # , endpoint=
 admin.add_view(ProtectedModelView(Products, db.session))
 admin.add_view(ProtectedModelView(Categories, db.session))

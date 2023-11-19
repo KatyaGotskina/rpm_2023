@@ -50,7 +50,48 @@
                         products = products.filter(elem => elem.id !== product.id);
                          renderGrid(products);
                      })
-                    productCard.appendChild(restoreButton);
+                    const numField = document.createElement('p');
+                    numField.textContent = product.number;
+                    numField.style.textAlign = 'center';
+                    numField.style.marginBottom = "5px";
+                    const addNumProd = document.createElement('form');
+                    addNumProd.addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        const number = inputField.value;
+                        axios.post('/admin_add_number/' + product.id, {'number' : number})
+                            .then(function(response) {
+                            if (response.status == 200) {
+                                numField.textContent = number;
+                                axios.get('/product_availability/' + product.id)
+                                .then(response => {
+                                    if (response.status === 200) {
+                                        productCard.appendChild(restoreButton);
+                                        restoreButton.hidden = false;
+                                    } else {
+                                        restoreButton.hidden = true;
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error(error);
+                                    submit.style.backgroundColor = 'red';
+                                });
+                            }
+                            });
+                        });
+                    addNumProd.className = "add-number-prods-form";
+                    const inputField = document.createElement('input');
+                    inputField.className = "add-number-input";
+                    inputField.type = 'text';
+                    addNumProd.appendChild(inputField);
+                    const submit = document.createElement('button');
+                    submit.className = "add-number-button"
+                    submit.textContent = 'ок';
+                    addNumProd.appendChild(submit);
+                    productCard.appendChild(numField);
+                    productCard.appendChild(addNumProd);
+                    axios.get('/product_availability/' + product.id).then(response => {
+                        if (response.status == 200) {productCard.appendChild(restoreButton)}
+                    })
                     gridContainer.appendChild(productCard);
                 });
             }
