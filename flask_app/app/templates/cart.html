@@ -20,87 +20,90 @@
         let gridContainer = document.getElementById('gridContainer');
 
         products.forEach(product => {
-            let imageUrl = `http://localhost:5000/static/${product.image_path}`;
-            const column = document.createElement('div');
-            column.className = "col-lg-2 col-sm-6";
-            
-            const productCard = document.createElement('div');
-            productCard.className = "product-card";
-            productCard.style = "height: 220px; width: 200px;";
-            productCard.innerHTML = `<div class="prod-image">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#${product.id}">
-                                            <img src="${imageUrl}">
-                                        </a>
-                                    </div>
-                                    <div class="prod-details">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#${product.id}">${product.name}</a>
-                                        <div class="bottom-details d-flex justify-content-between">
-                                            <p class="card-text">${product.weight}кг</p>
-                                            <p class="card-text" style="font-size: 17px;">${product.price} руб</p>
+            axios.get('/get_prod_num/' + product.id).then(response => {
+                const productNum = response.data.number;
+                let imageUrl = `http://localhost:5000/static/${product.image_path}`;
+                const column = document.createElement('div');
+                column.className = "col-lg-2 col-sm-6";
+                
+                const productCard = document.createElement('div');
+                productCard.className = "product-card";
+                productCard.style = "height: 220px; width: 200px;";
+                productCard.innerHTML = `<div class="prod-image">
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#${product.id}">
+                                                <img src="${imageUrl}">
+                                            </a>
                                         </div>
-                                    </div>`;
+                                        <div class="prod-details">
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#${product.id}">${product.name}</a>
+                                            <div class="bottom-details d-flex justify-content-between">
+                                                <p class="card-text">${product.weight}кг</p>
+                                                <p class="card-text" style="font-size: 17px;">${product.price} руб</p>
+                                            </div>
+                                        </div>`;
 
-            column.appendChild(productCard);
+                column.appendChild(productCard);
 
-            const numberProds = document.createElement('div');
-            numberProds.className = "d-flex justify-content-between mt-2";
+                const numberProds = document.createElement('div');
+                numberProds.className = "d-flex justify-content-between mt-2";
 
-            const deleteButton = document.createElement('button');
-            deleteButton.className = "minus";
-            const minusIcon = document.createElement('i');
-            minusIcon.className = "fa-solid fa-minus fa-xl";
-            deleteButton.appendChild(minusIcon);
-            deleteButton.onclick = () => {
-                axios.get('/minus_qty/' + product.id).then(response => {
-                    if (response.status == 204) {deleteProduct(product.id)}
-                    else {
-                        document.getElementById('total').innerHTML = 'Итого: ' + response.data.total; 
-                        qty.textContent = response.data.num + 'шт'; 
-                        plusButton.disabled = false;
-                        plusButton.style.color = '#2d7d59';
-                    }
-                }) 
-            };
-            const mainDeleteButton = document.createElement('button');
-            mainDeleteButton.className = "delete-poduct";
-            mainDeleteButton.textContent = "удалить";
-            mainDeleteButton.onclick = () => deleteProduct(product.id);
+                const deleteButton = document.createElement('button');
+                deleteButton.className = "minus";
+                const minusIcon = document.createElement('i');
+                minusIcon.className = "fa-solid fa-minus fa-xl";
+                deleteButton.appendChild(minusIcon);
+                deleteButton.onclick = () => {
+                    axios.get('/minus_qty/' + product.id).then(response => {
+                        if (response.status == 204) {deleteProduct(product.id)}
+                        else {
+                            document.getElementById('total').innerHTML = 'Итого: ' + response.data.total; 
+                            qty.textContent = response.data.num + 'шт'; 
+                            plusButton.disabled = false;
+                            plusButton.style.color = '#2d7d59';
+                        }
+                    }) 
+                };
+                const mainDeleteButton = document.createElement('button');
+                mainDeleteButton.className = "delete-poduct";
+                mainDeleteButton.textContent = "удалить";
+                mainDeleteButton.onclick = () => deleteProduct(product.id);
 
-            const qty = document.createElement('h3');
-            qty.className = "product-number";
-            qty.textContent = product.qty + 'шт';
+                const qty = document.createElement('h3');
+                qty.className = "product-number";
+                qty.textContent = productNum + 'шт';
 
-            const plusButton = document.createElement('button');
-            plusButton.className = "plus";
-            const plusIcon = document.createElement('i');
-            plusIcon.className = "fa-solid fa-plus fa-xl";
-            plusButton.appendChild(plusIcon);
-            axios.get('/check_quatity/' +product.id).then(response => {
-                if (response.status == 202) {
-                    plusButton.disabled = true;
-                    plusButton.style.color = 'red';
-                }
-            })
-            plusButton.onclick = () => {
-                axios.get('/plus_qty/' + product.id).then(response => {
-                    document.getElementById('total').innerHTML = 'Итого: ' + response.data.total; 
-                    qty.textContent = response.data.num + 'шт';
-                    if (response.status == 202) { 
+                const plusButton = document.createElement('button');
+                plusButton.className = "plus";
+                const plusIcon = document.createElement('i');
+                plusIcon.className = "fa-solid fa-plus fa-xl";
+                plusButton.appendChild(plusIcon);
+                axios.get('/check_quatity/' +product.id).then(response => {
+                    if (response.status == 202) {
                         plusButton.disabled = true;
                         plusButton.style.color = 'red';
                     }
                 })
-            }
+                plusButton.onclick = () => {
+                    axios.get('/plus_qty/' + product.id).then(response => {
+                        document.getElementById('total').innerHTML = 'Итого: ' + response.data.total; 
+                        qty.textContent = response.data.num + 'шт';
+                        if (response.status == 202) { 
+                            plusButton.disabled = true;
+                            plusButton.style.color = 'red';
+                        }
+                    })
+                }
 
-            numberProds.appendChild(deleteButton);
-            numberProds.appendChild(qty);
-            numberProds.appendChild(plusButton);
+                numberProds.appendChild(deleteButton);
+                numberProds.appendChild(qty);
+                numberProds.appendChild(plusButton);
 
-            column.appendChild(numberProds);
-            column.appendChild(mainDeleteButton);
-            gridContainer.appendChild(column);
-        });
-        };
+                column.appendChild(numberProds);
+                column.appendChild(mainDeleteButton);
+                gridContainer.appendChild(column);
+            }) 
+        })
+    };
     
     let products = JSON.parse('{{ products|tojson|safe }}');
     let total = JSON.parse('{{ total|tojson|safe }}')

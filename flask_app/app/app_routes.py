@@ -1,8 +1,9 @@
 from app import app
-from .models import Products, Orders, db, User, OrdersToProducts
+from .models import Products, Orders, db, OrdersToProducts
 from flask import jsonify, request, session, make_response, render_template
 from flask_login import current_user
 from decimal import Decimal
+from .base_func import get_current_user, get_prod_by_id
 
 
 @app.route('/get_active_products', methods=['GET'])
@@ -34,7 +35,7 @@ def get_archive_products():
 @app.route('/make_archive', methods=['POST'])
 def make_prod_archive():
     product_id = request.json.get('product_id')
-    product = Products.query.get(product_id)
+    product = get_prod_by_id(product_id)
     product.prod_status = 'inactive'
     db.session.commit()
     return jsonify({'message': 'edited'}), 200
@@ -43,7 +44,7 @@ def make_prod_archive():
 @app.route('/restore', methods=['POST'])
 def make_prod_active():
     product_id = request.json.get('product_id')
-    product = Products.query.get(product_id)
+    product = get_prod_by_id(product_id)
     product.prod_status = 'active'
     db.session.commit()
     return jsonify({'message': 'edited'}), 200
@@ -52,12 +53,12 @@ def make_prod_active():
 @app.route('/make_order')
 def make_order():
     try:
-        user = User.query.get(current_user.get_id())
+        user = get_current_user()
         order = Orders(status='created', user_id=user.id)
         db.session.add(order)
         db.session.commit()
         for product_id in session["Cart"]["items"]:
-            product = Products.query.get(product_id)
+            product = get_prod_by_id(product_id)
             product.number -= session["Cart"]["items"][product_id]['qty']
             db.session.commit()
             if product.number == 0:
@@ -85,7 +86,7 @@ def get_user_orders():
 
 @app.route('/add_cookies')
 def cookies():
-    user = User.query.get(current_user.get_id())
+    user = get_current_user()
     res = make_response(render_template('homepage.html', cookie_flag=True))
     res.set_cookie("name", user.first_name, max_age=60 * 60 * 24)
     session['cookie_flag'] = True
@@ -110,7 +111,7 @@ def delete_cookies():
 
 @app.route('/minus_qty/<string:product_id>')
 def minus_product_qty(product_id):
-    product = Products.query.get(product_id)
+    product = get_prod_by_id(product_id)
     session['Cart']['items'][str(product_id)]['qty'] -= 1
     session.modified = True
     num = session['Cart']['items'][str(product_id)]['qty']
@@ -120,7 +121,7 @@ def minus_product_qty(product_id):
 
 @app.route('/plus_qty/<string:product_id>')
 def plus_product_qty(product_id):
-    product = Products.query.get(product_id)
+    product = get_prod_by_id(product_id)
     session['Cart']['total'] = Decimal(session['Cart']['total']) + product.price
     session['Cart']['items'][str(product_id)]['qty'] += 1
     session.modified = True
@@ -131,14 +132,14 @@ def plus_product_qty(product_id):
 
 @app.route('/check_quatity/<uuid:product_id>')
 def check_quatity(product_id):
-    product = Products.query.get(product_id)
+    product = get_prod_by_id(product_id)
     return ({'massege': 'full'}, 202) if session['Cart']['items'][str(product_id)]['qty'] == product.number else ({'massege': 'good'}, 200)
 
 
 @app.route('/del_prod_from_cart/<string:product_id>', methods=['DELETE'])
 def delete_from_cart(product_id):
     if product_id in session["Cart"]["items"]:
-        session['Cart']['total'] = Decimal(session['Cart']['total']) - Products.query.get(
+        session['Cart']['total'] = Decimal(session['Cart']['total']) - get_prod_by_id(
             product_id).price * session["Cart"]["items"][product_id]['qty']
         del session["Cart"]["items"][product_id]
         session.modified = True
@@ -152,13 +153,13 @@ def add_to_cart():
         if not product_id in session["Cart"]["items"]:
             session["Cart"]["items"][product_id] = {"qty": 1}
             session['Cart']['total'] = Decimal(
-                session['Cart']['total']) + Products.query.get(product_id).price
+                session['Cart']['total']) + get_prod_by_id(product_id).price
             session.modified = True
             return jsonify({'message': 'added'}), 200
         else:
             del session["Cart"]["items"][product_id]
             session['Cart']['total'] = Decimal(
-                session['Cart']['total']) - Products.query.get(product_id).price
+                session['Cart']['total']) - get_prod_by_id(product_id).price
             session.modified = True
             return jsonify({'message': 'deleted'}), 204
 
@@ -170,16 +171,25 @@ def get_total():
 
 @app.route('/product_availability/<uuid:product_id>')
 def check_product_availability(product_id):
-    product = Products.query.get(product_id)
+    product = get_prod_by_id(product_id)
     return ({'message': 'not found'}, 204) if product.number == 0 else ({'massege': 'good'}, 200)
 
 
 @app.route('/admin_add_number/<uuid:product_id>', methods=['POST'])
 def admin_add_number(product_id):
-    product = Products.query.get(product_id)
+    product = get_prod_by_id(product_id)
     number = request.json.get('number')
     if not number.isdigit() or (number.startswith('0') and len(number) > 1) or int(number) < 0:
         return {'massege': 'bad'}, 400
     product.number = number
     db.session.commit()
     return {'massege': 'good'}, 200
+
+
+@app.route('/is_admin')
+def is_admin():
+    pass
+
+@app.route('/get_prod_num/<uuid:product_id>')
+def get_prod_num(product_id):
+    return {'number' : session['Cart']['items'][str(product_id)]['qty']}, 200
