@@ -95,7 +95,7 @@ def cookies():
 
 @app.route('/show_cookies')
 def show():
-    if request.cookies.get("name"):  # проверяем есть ли кука Name
+    if request.cookies.get("name"):  # проверяем есть ли кука name
         return "Hello " + request.cookies.get("name")
     else:
         return "Кук нет"
@@ -188,7 +188,7 @@ def admin_add_number(product_id):
 
 @app.route('/is_admin')
 def is_admin():
-    pass
+    return ({'massege': 'good'}, 200) if 'admin' in [role.name for role in get_current_user().roles] else ({'massege': 'bad'}, 409)
 
 @app.route('/get_prod_num/<uuid:product_id>')
 def get_prod_num(product_id):

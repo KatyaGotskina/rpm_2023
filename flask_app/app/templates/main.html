@@ -2,7 +2,9 @@
 <head>
     <title>Shesterochka</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
-    {% block head %}{% endblock %}
+    {% block head %}
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    {% endblock %}
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-info-subtle">
@@ -13,12 +15,12 @@
             <li class="nav-item"><a class="nav-link" href="/menu">К покупкам!</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('cart') }}" style="color: brown;">Корзина</a></li>
             {% if current_user.is_authenticated %}
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}" style="padding-left: 540px;"><i class="fa-solid fa-envelope fa-xl"></i></a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}" style="padding-left: 510px;"><i class="fa-solid fa-envelope fa-xl"></i></a></li>
               <li class="nav-item"><a class="nav-link" href="#" style="color: red;"></a></li>
               <li class="nav-item"><a href="{{ url_for('profile') }}" class="nav-link" style="padding-left: 10px;"><i class="fa-solid fa-user fa-lg"></i></a></li>
               <li><a class="nav-link" href="{{ url_for('logout') }}" style="padding-left: 10px;"><i class="fa-solid fa-person-running fa-xl"></i></a></li> 
             {% else %}
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}" style="padding-left: 410px;"><i class="fa-solid fa-envelope fa-xl"></i></a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}" style="padding-left: 380px;"><i class="fa-solid fa-envelope fa-xl"></i></a></li>
               <li class="nav-item"><a class="nav-link" href="#" style="color: red;"></a></li>
               <li class="nav-item"><a class="nav-link" href="{{ url_for('signin') }}"  style="padding-left: 10px;">Войти</a></li> 
               <li class="nav-item"><a class="nav-link" href="{{ url_for('signup') }}"  style="padding-left: 10px;">Зарегистрироваться</a></li>
@@ -30,10 +32,22 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://kit.fontawesome.com/1eec33a14f.js" crossorigin="anonymous"></script>
-<!-- Add this to your head tag -->
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Add this before your closing body tag -->
+<script>
+  let navbarElements = document.querySelector(".navbar-nav");
+  axios.get('/is_admin').then(response => {
+    const navItem = document.createElement('li')
+    navItem.className = "nav-item";
+    const navItemHref = document.createElement('a')
+    navItemHref.className = "nav-link";
+    navItemHref.href = "/admin";
+    const navItemImage = document.createElement('i')
+    navItemImage.className = "fa-solid fa-screwdriver-wrench fa-xl";
+    navItemHref.appendChild(navItemImage);
+    navItem.appendChild(navItemHref);
+    navbarElements.appendChild(navItem);
+  }).catch(err => console.log(err))
+</script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.bundle.min.js"></script>
 </body>
