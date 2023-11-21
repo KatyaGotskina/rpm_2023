@@ -14,7 +14,8 @@ margin-left: 10px;
 background-color: rgb(26, 91, 145);
 border-color: white;
 width: 100px;
-"class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft">Каталог</button>
+" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft"
+    aria-controls="offcanvasLeft">Каталог</button>
 <!-- This is your sidebar -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
     <div class="offcanvas-header">
@@ -25,7 +26,8 @@ width: 100px;
         <!-- Here you can add your content or links -->
         <ul>
             {% for cat in categories %}
-                <li><a href="{{ url_for('filter_category', category_id=cat.id) }}" style="text-decoration: none; color: #61917c; font-size: 20px;">{{ cat.name }}</a></li>
+            <li><a href="{{ url_for('filter_category', category_id=cat.id) }}"
+                    style="text-decoration: none; color: #61917c; font-size: 20px;">{{ cat.name }}</a></li>
             {% endfor %}
         </ul>
     </div>
@@ -39,11 +41,11 @@ width: 100px;
 <script>
     let products = JSON.parse('{{ products|tojson|safe }}');
     let all_prods = JSON.parse('{{ products|tojson|safe }}');
-    
+
     function renderGrid() {
         let gridContainer = document.querySelector('.main-part .row');
         gridContainer.innerHTML = '';
-        products.forEach(function(product) {
+        products.forEach(function (product) {
             let productCard = document.createElement('div');
             productCard.className = 'col-lg-2 col-md-6 col-sm-12';
             let imageUrl = `http://localhost:5000/static/${product.image_path}`;
@@ -69,7 +71,7 @@ width: 100px;
         products = all_prods;
         searchText = searchText.toLowerCase();
 
-        let filteredProducts = products.filter(function(product) {
+        let filteredProducts = products.filter(function (product) {
             return product.name.toLowerCase().includes(searchText);
         });
         products = filteredProducts;

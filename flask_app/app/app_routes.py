@@ -190,6 +190,7 @@ def admin_add_number(product_id):
 def is_admin():
     return ({'massege': 'good'}, 200) if 'admin' in [role.name for role in get_current_user().roles] else ({'massege': 'bad'}, 409)
 
+
 @app.route('/get_prod_num/<uuid:product_id>')
 def get_prod_num(product_id):
-    return {'number' : session['Cart']['items'][str(product_id)]['qty']}, 200
+    return {'number': session['Cart']['items'][str(product_id)]['qty']}, 200

@@ -5,11 +5,12 @@ from dotenv import load_dotenv
 load_dotenv()
 app_dir = path.abspath(path.dirname(__file__))
 
+
 class BaseConfig:
     SECRET_KEY = getenv('SECRET_KEY')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    #---- настройка Flask-Mail ----#
+    # ---- настройка Flask-Mail ----#
     MAIL_SERVER = "smtp.gmail.com"
     MAIL_PORT = 587
     MAIL_USE_TLS = True

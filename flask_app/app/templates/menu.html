@@ -4,64 +4,66 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/menu.css') }}">
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 {% endblock %}
-    {% block content %}
-    <div class="search-box">
-        <input type="text" id="product-search" class="form-control" placeholder="Поиск...">
-    </div>
-    <!-- This goes somewhere in your main layout -->
-    <button style="
+{% block content %}
+<div class="search-box">
+    <input type="text" id="product-search" class="form-control" placeholder="Поиск...">
+</div>
+<!-- This goes somewhere in your main layout -->
+<button style="
         margin-top: 20px;
         margin-left: 10px;
         background-color: rgb(26, 91, 145);
         border-color: white;
         width: 100px;
-    "class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft">Каталог</button>
-    <!-- This is your sidebar -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
-        <div class="offcanvas-header">
-            <h5 id="offcanvasLeftLabel" style="color: rgb(26, 91, 145); font-size: 25px;">Категории</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <ul>
-                {% for cat in categories %}
-                    <li><a href="filter_category/{{ cat.id }}" style="text-decoration: none; color: #61917c; font-size: 20px;">{{ cat.name }}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
+    " class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft"
+    aria-controls="offcanvasLeft">Каталог</button>
+<!-- This is your sidebar -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasLeftLabel" style="color: rgb(26, 91, 145); font-size: 25px;">Категории</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="container">
-        <div class="main-part">
-        </div>
+    <div class="offcanvas-body">
+        <ul>
+            {% for cat in categories %}
+            <li><a href="filter_category/{{ cat.id }}"
+                    style="text-decoration: none; color: #61917c; font-size: 20px;">{{ cat.name }}</a></li>
+            {% endfor %}
+        </ul>
     </div>
+</div>
+<div class="container">
+    <div class="main-part">
+    </div>
+</div>
 
-    <script>
-        let data = JSON.parse('{{ data|tojson|safe }}');
-        let all_data = JSON.parse('{{ data|tojson|safe }}');
-        let product_cart = JSON.parse('{{ product_ids|tojson|safe }}')
-        let user_is_auth = JSON.parse('{{ current_user.is_authenticated|tojson|safe }}')
+<script>
+    let data = JSON.parse('{{ data|tojson|safe }}');
+    let all_data = JSON.parse('{{ data|tojson|safe }}');
+    let product_cart = JSON.parse('{{ product_ids|tojson|safe }}')
+    let user_is_auth = JSON.parse('{{ current_user.is_authenticated|tojson|safe }}')
 
-        function renderGrid() {
-            let gridContainer = document.querySelector('.main-part');
-            gridContainer.innerHTML = '';
+    function renderGrid() {
+        let gridContainer = document.querySelector('.main-part');
+        gridContainer.innerHTML = '';
 
-            for (let cat in data) {
-                let categoryName = document.createElement('H4');
-                categoryName.style.color = 'rgb(26, 91, 145)';
-                categoryName.textContent = cat;
-                gridContainer.appendChild(categoryName);
+        for (let cat in data) {
+            let categoryName = document.createElement('H4');
+            categoryName.style.color = 'rgb(26, 91, 145)';
+            categoryName.textContent = cat;
+            gridContainer.appendChild(categoryName);
 
-                let slideContainer = document.createElement('div');
-                slideContainer.className = "slide-container";
-                let slideContent = document.createElement('div');
-                slideContent.className = "slide-content";
-                slideContainer.appendChild(slideContent);
+            let slideContainer = document.createElement('div');
+            slideContainer.className = "slide-container";
+            let slideContent = document.createElement('div');
+            slideContent.className = "slide-content";
+            slideContainer.appendChild(slideContent);
 
-                data[cat].forEach(function(product) {
-                    let imageUrl = `http://localhost:5000/static/${product.image_path}`;
-                    let productCard = document.createElement('div');
-                    productCard.className = "product-card";
-                    productCard.innerHTML = `
+            data[cat].forEach(function (product) {
+                let imageUrl = `http://localhost:5000/static/${product.image_path}`;
+                let productCard = document.createElement('div');
+                productCard.className = "product-card";
+                productCard.innerHTML = `
                         <div class="prod-image">
                             <a href="#" data-bs-toggle="modal" data-bs-target="#${product.id}"><img src="${imageUrl}"></a>
                         </div>
@@ -73,62 +75,63 @@
                             </div>
                         </div>`;
 
-                    let bottomDetails = productCard.querySelector(".bottom-details.d-flex.justify-content-between");
-                    if (user_is_auth) {
-                        let button = document.createElement('button');
-                        button.style = "border: 0; background-color: transparent; cursor: pointer; color: rgb(79, 115, 103)";
-                        button.type = "button";
-                        let icon = document.createElement('i');
-                        icon.style = "padding-bottom: 20px;";
-                        if (product_cart.includes(product.id)) {
-                            icon.className = "fa-solid fa-check fa-xl";} else {icon.className = "fa-solid fa-basket-shopping fa-xl"}
-                        button.appendChild(icon);
-                        button.onclick = () => {
-                            axios.post('/add_to_cart', {'product_id' : product.id}).then((response) => { 
-                                if (response.status == 204) {button.innerHTML = '<i style="padding-bottom: 20px;" class="fa-solid fa-basket-shopping fa-xl"></i>'}
-                                else {button.innerHTML = '<i style="padding-bottom: 20px;" class="fa-solid fa-check fa-xl"></i>'} 
-                            })
-                        }
-                        bottomDetails.appendChild(button);
+                let bottomDetails = productCard.querySelector(".bottom-details.d-flex.justify-content-between");
+                if (user_is_auth) {
+                    let button = document.createElement('button');
+                    button.style = "border: 0; background-color: transparent; cursor: pointer; color: rgb(79, 115, 103)";
+                    button.type = "button";
+                    let icon = document.createElement('i');
+                    icon.style = "padding-bottom: 20px;";
+                    if (product_cart.includes(product.id)) {
+                        icon.className = "fa-solid fa-check fa-xl";
+                    } else { icon.className = "fa-solid fa-basket-shopping fa-xl" }
+                    button.appendChild(icon);
+                    button.onclick = () => {
+                        axios.post('/add_to_cart', { 'product_id': product.id }).then((response) => {
+                            if (response.status == 204) { button.innerHTML = '<i style="padding-bottom: 20px;" class="fa-solid fa-basket-shopping fa-xl"></i>' }
+                            else { button.innerHTML = '<i style="padding-bottom: 20px;" class="fa-solid fa-check fa-xl"></i>' }
+                        })
                     }
-                    slideContent.appendChild(productCard)
-                });
-                gridContainer.appendChild(slideContainer);
-            }
-        }
-
-        function addToCart(productId) {
-            axios.post('/menu/add_to_cart', {
-                'product_id': productId
-            }).then((response) => {
-                console.log(response);
-            });
-        }
-
-        function filteredData(searchText) {
-            data = all_data;
-            searchText = searchText.toLowerCase();
-            let new_data = {};
-
-            for (let cat in data) {
-                new_data[cat] = data[cat].filter(function(product) {
-                    return product.name.toLowerCase().includes(searchText);
-                });
-
-                if (new_data[cat].length === 0) {
-                    delete new_data[cat];
+                    bottomDetails.appendChild(button);
                 }
+                slideContent.appendChild(productCard)
+            });
+            gridContainer.appendChild(slideContainer);
+        }
+    }
+
+    function addToCart(productId) {
+        axios.post('/menu/add_to_cart', {
+            'product_id': productId
+        }).then((response) => {
+            console.log(response);
+        });
+    }
+
+    function filteredData(searchText) {
+        data = all_data;
+        searchText = searchText.toLowerCase();
+        let new_data = {};
+
+        for (let cat in data) {
+            new_data[cat] = data[cat].filter(function (product) {
+                return product.name.toLowerCase().includes(searchText);
+            });
+
+            if (new_data[cat].length === 0) {
+                delete new_data[cat];
             }
-            data = new_data;
-            renderGrid();
         }
-
-        function onSearchInputChange() {
-            let searchText = document.getElementById('product-search').value;
-            filteredData(searchText);
-        }
-        document.getElementById('product-search').addEventListener('input', onSearchInputChange);
+        data = new_data;
         renderGrid();
+    }
 
-    </script>
+    function onSearchInputChange() {
+        let searchText = document.getElementById('product-search').value;
+        filteredData(searchText);
+    }
+    document.getElementById('product-search').addEventListener('input', onSearchInputChange);
+    renderGrid();
+
+</script>
 {% endblock %}

@@ -25,7 +25,7 @@
                 let imageUrl = `http://localhost:5000/static/${product.image_path}`;
                 const column = document.createElement('div');
                 column.className = "col-lg-2 col-sm-6";
-                
+
                 const productCard = document.createElement('div');
                 productCard.className = "product-card";
                 productCard.style = "height: 220px; width: 200px;";
@@ -54,14 +54,14 @@
                 deleteButton.appendChild(minusIcon);
                 deleteButton.onclick = () => {
                     axios.get('/minus_qty/' + product.id).then(response => {
-                        if (response.status == 204) {deleteProduct(product.id)}
+                        if (response.status == 204) { deleteProduct(product.id) }
                         else {
-                            document.getElementById('total').innerHTML = 'Итого: ' + response.data.total; 
-                            qty.textContent = response.data.num + 'шт'; 
+                            document.getElementById('total').innerHTML = 'Итого: ' + response.data.total;
+                            qty.textContent = response.data.num + 'шт';
                             plusButton.disabled = false;
                             plusButton.style.color = '#2d7d59';
                         }
-                    }) 
+                    })
                 };
                 const mainDeleteButton = document.createElement('button');
                 mainDeleteButton.className = "delete-poduct";
@@ -77,7 +77,7 @@
                 const plusIcon = document.createElement('i');
                 plusIcon.className = "fa-solid fa-plus fa-xl";
                 plusButton.appendChild(plusIcon);
-                axios.get('/check_quatity/' +product.id).then(response => {
+                axios.get('/check_quatity/' + product.id).then(response => {
                     if (response.status == 202) {
                         plusButton.disabled = true;
                         plusButton.style.color = 'red';
@@ -85,9 +85,9 @@
                 })
                 plusButton.onclick = () => {
                     axios.get('/plus_qty/' + product.id).then(response => {
-                        document.getElementById('total').innerHTML = 'Итого: ' + response.data.total; 
+                        document.getElementById('total').innerHTML = 'Итого: ' + response.data.total;
                         qty.textContent = response.data.num + 'шт';
-                        if (response.status == 202) { 
+                        if (response.status == 202) {
                             plusButton.disabled = true;
                             plusButton.style.color = 'red';
                         }
@@ -101,10 +101,10 @@
                 column.appendChild(numberProds);
                 column.appendChild(mainDeleteButton);
                 gridContainer.appendChild(column);
-            }) 
+            })
         })
     };
-    
+
     let products = JSON.parse('{{ products|tojson|safe }}');
     let total = JSON.parse('{{ total|tojson|safe }}')
     renderGrid(products)
@@ -130,7 +130,7 @@
             gridContainer.innerHTML = '';
             renderGrid(products)
         })
-        .catch(error => {
+            .catch(error => {
                 console.error('Error deleting product:', error);
             })
     }

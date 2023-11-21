@@ -12,17 +12,17 @@
 </div>
 <div class="container">
     <div class="row justify-content-center align-items-center d-flex">
-    <!-- Карточка №1 -->
-            <div class="col-lg-3 col-sm-6">
-                <div class="card" style="width: 16rem;">
-                    <img src="{{ url_for('static', filename='images/eda_2.jpeg') }}" class="card-img-top">
-                    <div class="card-body">
-                        <h5 class="card-title">Овощи и фрукты</h5>
-                        <p class="card-text">Регулярные поставки свежих фруктов с гарантией качества</p>
-                        <a href="#" class="btn btn-primary">перейти</a>
-                    </div>
+        <!-- Карточка №1 -->
+        <div class="col-lg-3 col-sm-6">
+            <div class="card" style="width: 16rem;">
+                <img src="{{ url_for('static', filename='images/eda_2.jpeg') }}" class="card-img-top">
+                <div class="card-body">
+                    <h5 class="card-title">Овощи и фрукты</h5>
+                    <p class="card-text">Регулярные поставки свежих фруктов с гарантией качества</p>
+                    <a href="#" class="btn btn-primary">перейти</a>
                 </div>
             </div>
+        </div>
         <!-- Карточка №2 -->
         <div class="col-lg-3 col-sm-6">
             <div class="card" style="width: 16rem;">
@@ -51,14 +51,15 @@
                 <img src="{{ url_for('static', filename='images/kitchen_2.jpeg') }}" class="card-img-top">
                 <div class="card-body">
                     <h5 class="card-title">Посуда и кухонная утварь</h5>
-                    <p class="card-text">Pазнообразная, оригинальная и удобная кухонная посуда для ценителей кулинарного искусства</p>
+                    <p class="card-text">Pазнообразная, оригинальная и удобная кухонная посуда для ценителей кулинарного
+                        искусства</p>
                     <a href="#" class="btn btn-primary">перейти</a>
                 </div>
             </div>
         </div>
         <img src="{{ url_for('static', filename='images/sbermarket.png') }}" style="padding-top: 40px;">
-        </div>
     </div>
+</div>
 </div>
 
 <script>
@@ -83,8 +84,8 @@
         closePopup();
     }
 
-   window.onload = function() {
-    if (!cookie_flag) { openPopup()};
-};
+    window.onload = function () {
+        if (!cookie_flag) { openPopup() };
+    };
 </script>
 {% endblock %}
